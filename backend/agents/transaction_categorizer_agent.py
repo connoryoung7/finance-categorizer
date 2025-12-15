@@ -31,7 +31,7 @@ class CategorizeTransactionAgent:
         self.categories = categories
 
     def categorize_transaction(self, transaction: Transaction) -> None:
-        if transaction.amount >= 0:
+        if transaction.amount >= 0: 
             print(f"Skipping categorization for transaction {transaction.id} as it is not an expense.")
             return
         if not transaction.payee_name:
@@ -45,7 +45,7 @@ class CategorizeTransactionAgent:
             if not transaction.payee_name:
                 raise ValueError("Transaction must have a payee name to be categorized.")
             
-            self.__categorize_transaction_by_payee_name(payee_name=transaction.payee_name)
+            # self.__categorize_transaction_by_payee_name(payee_name=transaction.payee_name)
             print(f"Could not categorize transaction {transaction.id} by payee history.")
     
     def __categorize_transaction_by_payee_name(self, payee_name: str):
