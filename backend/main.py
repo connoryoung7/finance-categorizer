@@ -8,10 +8,6 @@ def main():
 if __name__ == "__main__":
     main()
 
-@app.get("/")
-async def index():
-    return {"hello": "world"}
-
 @app.post("/amazon/orders/file")
 async def parse_amazon_orders_file(file: UploadFile):
     contents = await file.read()
