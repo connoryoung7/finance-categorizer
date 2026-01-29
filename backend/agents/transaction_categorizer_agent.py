@@ -1,15 +1,15 @@
 from ddgs import DDGS
 from mistralai import Mistral, SystemMessage, UserMessage
+from pydantic import BaseModel
 
 from dataclasses import dataclass
 import json
 from typing import List
 
-from models.budget import Category, Transaction
+from models.budget import Category, Transaction, ConfidenceLevel
 from services.transaction_service import TransactionService
 
-@dataclass
-class CategorizationResult:
+class CategorizationResult(BaseModel):
     category_id: str
     confidence_level: float
 
@@ -26,7 +26,7 @@ class CategorizeTransactionAgent:
     """
     def __init__(self, llm_client: Mistral, transaction_service: TransactionService, categories: List[Category]):
         self.mistral_client = llm_client
-        self.model = "mistral-medium-latest"
+        self.model = "ministral-8b-latest"
         self.transaction_service = transaction_service
         self.categories = categories
 
@@ -45,33 +45,18 @@ class CategorizeTransactionAgent:
             if not transaction.payee_name:
                 raise ValueError("Transaction must have a payee name to be categorized.")
             
-            # self.__categorize_transaction_by_payee_name(payee_name=transaction.payee_name)
-            print(f"Could not categorize transaction {transaction.id} by payee history.")
-    
-    def __categorize_transaction_by_payee_name(self, payee_name: str):
-        response = self.mistral_client.chat.complete(
-            model=self.model,
-            messages=[
-                SystemMessage(
-                    content="""
-                    You are a data labeller for a credit card company. You will be given all the possible categories that a transaction can be in the form of JSON.
-                    It is your job to take that payee name, and match it to the category that you think that it's suppose to be.
-                    If addition to your categorization, you will also provide a confidence level which will denote how likely this categorization
-                    is.
-                    """
-                ),
-                UserMessage(
-                    content=f"categorizes: {json.dumps([c.model_dump_json   () for c in self.categories])} payee_name: {payee_name}"
-                )
-            ],
-            temperature=0
-        )
+            result = self.categorize_from_web_search_internet(transaction=transaction)
+            print(f"Categorized transaction {transaction.id} by web search to category {result.category_id} with confidence {result.confidence_level}")
 
-        print(response.choices[0].message.content)
+            if (result.confidence_level * 100) >= ConfidenceLevel.HighConfidence.value:
+                self.transaction_service.categorize_transaction(transaction=transaction, category_id=result.category_id)
+            else:
+                print(f"Skipping categorization for transaction {transaction.id} due to low confidence level of {result.confidence_level}")
 
-    def categorize_from_web_search_internet(self, transaction: Transaction):
+
+    def categorize_from_web_search_internet(self, transaction: Transaction) -> CategorizationResult:
         search_results = self.__search_payee_name_on_internet(payee_name=transaction.payee_name or "")
-        self.mistral_client.chat.complete(
+        response = self.mistral_client.chat.parse(
             model=self.model,
             messages=[
                 SystemMessage(
@@ -79,12 +64,17 @@ class CategorizeTransactionAgent:
                     You are a data labeller for a credit card company. You will be given all the possible categories that a transaction can be in the form of JSON.
                     You will also be given the search results for the payee name on the internet. By looking at the different search results, you want to determine
                     what the category of the transaction is. If addition to your categorization, you will also provide a confidence level which will denote how likely this categorization is.
+                    For context, if you can guarantee that the payee name matches the category, you should provide a confidence level of 0.95 or higher.
+                    If there is some uncertainty, you should provide a confidence level between 0.90 and 0.95. If you are unsure, you should provide a confidence level below 0.90.
                     """
                 ),
-                UserMessage(content=f"categorizes: {json.dumps(self.categories)} search_results: {search_results}")
+                UserMessage(content=f"categorizes: {json.dumps([c.model_dump_json() for c in self.categories])} search_results: {search_results}")
             ],
+            response_format=CategorizationResult,
             temperature=0.0
         )
+
+        return CategorizationResult.model_validate(response.choices[0].message.parsed)
 
     def __search_payee_name_on_internet(self, payee_name: str, max_results: int = 3) -> List[SearchResult]:
         """Makes a web search on the DuckDuckGo search engine"""

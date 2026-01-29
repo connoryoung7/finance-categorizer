@@ -1,0 +1,11 @@
+__pycache__
+.ruff_cache
+
+.env
+
+.vscode/
+.idea/
+
+.DS_Store
+
+parsed_messages/

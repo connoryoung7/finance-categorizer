@@ -1,7 +1,7 @@
 from collections import Counter
 from typing import List
 
-from models.budget import Transaction
+from models.budget import Payee, Transaction
 from clients.ynab_client import YNABClient
 
 class TransactionService:
@@ -37,3 +37,6 @@ class TransactionService:
 
         if len(category_ids) == 1:
             return category_ids[0]
+
+    def get_payees(self) -> List[Payee]:
+        return self.ynab_client.get_payees()

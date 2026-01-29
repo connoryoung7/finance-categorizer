@@ -2,7 +2,7 @@ from typing import List
 
 import ynab
 
-from models.budget import Category, CategoryGroup, Transaction
+from models.budget import Category, CategoryGroup, Payee, Transaction
 
 class YNABClient:
     def __init__(self, access_token: str, budget_id: str) -> None:
@@ -81,6 +81,26 @@ class YNABClient:
                 return response.data
             except Exception as e:
                 print("Exception when calling PayeesAPI->get_payees: %s\n" % e)
+
+    def get_payees(self) -> List[Payee]:
+        with ynab.ApiClient(self.configuration) as api_client:
+            api_instance = ynab.PayeesApi(api_client)
+            try:
+                response = api_instance.get_payees(
+                    budget_id=self.budget_id,
+                )
+                payees: List[Payee] = []
+                for p in response.data.payees:
+                    payees.append(
+                        Payee(
+                            id=p.id,
+                            name=p.name,
+                        )
+                    )
+                return payees
+            except Exception as e:
+                print("Exception when calling PayeesAPI->get_payees: %s\n" % e)
+                raise e 
 
     def categorize_transaction(self, transaction: Transaction):
         with ynab.ApiClient(self.configuration) as api_client:
