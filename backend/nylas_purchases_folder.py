@@ -8,14 +8,11 @@ from config import settings
 
 from html_to_markdown import convert_with_metadata, MetadataConfig
 
-# h = html2text.HTML2Text()
-
 nylas_client = Client(
     settings.nylas_api_key,
     settings.nylas_api_uri
 )
 grant_id = settings.nylas_grant_id
-# folder_id = os.environ.get("FOLDER_ID")
 
 messages = nylas_client.messages.list(
   identifier=grant_id,
@@ -34,8 +31,6 @@ for message in messages.data[0:25]:
             "html_as_markdown": True,
         }
     )
-
-    # print(response.data)
 
     message_body = response.data[0].body
 

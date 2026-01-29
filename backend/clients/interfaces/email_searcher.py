@@ -10,6 +10,7 @@ class EmailSearchQuery(BaseModel):
     '''
     Filters for any query regarding searching on emails
     '''
+    search_query_native: Optional[str] = None
     from_email: Optional[str] = None
     subject_contains: Optional[str] = None
     start_date: Optional[time] = None  # Unix timestamp
