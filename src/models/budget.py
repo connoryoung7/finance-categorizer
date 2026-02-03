@@ -1,5 +1,5 @@
 from datetime import datetime
-from enum import IntEnum
+from enum import Enum, IntEnum
 from typing import Optional
 
 from pydantic import BaseModel, StrictStr
@@ -46,7 +46,7 @@ class TransactionEmail(BaseModel):
     date: datetime
     markdown_body: Optional[StrictStr]
 
-class PayeeCategorizationStatus(str, IntEnum):
+class PayeeCategorizationStatus(str, Enum):
     """
     Enum representing the status of a payee categorization.
 

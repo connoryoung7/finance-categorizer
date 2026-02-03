@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
-from models.email import Email
+from src.models.email import Email
 
 
 class EmailSearchQuery(BaseModel):

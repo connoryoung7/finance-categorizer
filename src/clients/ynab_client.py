@@ -2,7 +2,7 @@ from typing import List
 
 import ynab
 
-from models.budget import Category, CategoryGroup, Payee, Transaction
+from src.models.budget import Category, CategoryGroup, Payee, Transaction
 
 
 class YNABClient:
@@ -34,7 +34,7 @@ class YNABClient:
                                 category_group=category_group,
                             )
                         )
-                    
+
                 return categories
             except Exception as e:
                 print(e)
@@ -43,10 +43,10 @@ class YNABClient:
     def get_uncategorized_transactions(self, limit: int = 20) -> List[Transaction]:
         """
         Docstring for get_uncategorized_transactions
-        
+
         :param self: Description
         :param limit: The maximum number of transactions to retrieve
-        :type limit: int 
+        :type limit: int
         :return: A list of uncategorized transactions
         :rtype: List[Transaction]
         """
@@ -68,7 +68,7 @@ class YNABClient:
                         approved=t.approved,
                     )
                 )
-            
+
             return transactions
 
 
@@ -101,7 +101,7 @@ class YNABClient:
                 return payees
             except Exception as e:
                 print("Exception when calling PayeesAPI->get_payees: %s\n" % e)
-                raise e 
+                raise e
 
     def categorize_transaction(self, transaction: Transaction):
         with ynab.ApiClient(self.configuration) as api_client:
@@ -131,9 +131,9 @@ class YNABClient:
                     budget_id=self.budget_id,
                     payee_id=payee_id,
                 )
-                
+
                 transactions: List[Transaction] = []
-                
+
                 for t in response.data.transactions:
                     transactions.append(
                         Transaction(

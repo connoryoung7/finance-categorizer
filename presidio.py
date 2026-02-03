@@ -1,4 +1,4 @@
-from services.pii_redactor import PIIRedactor
+from src.services.pii_redactor import PIIRedactor
 
 
 def main():

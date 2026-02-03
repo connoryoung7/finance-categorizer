@@ -1,14 +1,14 @@
 import datetime
 
-from pydantic import BaseClass
+from pydantic import BaseModel
 
 
-class AmazonOrder(BaseClass):
+class AmazonOrder(BaseModel):
     id: str
     date: datetime.date
-    total_cost: int 
+    total_cost: int
 
-class AmazonOrderItem(BaseClass):
+class AmazonOrderItem(BaseModel):
     order_id: str
     product_name: str
     total_cost: int

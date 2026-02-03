@@ -1,12 +1,12 @@
 from sqlalchemy import Engine
 
-from models.budget import PayeeCategorization
+from src.models.budget import PayeeCategorization
 
 
 class BudgetRepo:
     def __init___(self, db: Engine):
         self.db = db
-    
+
     def get_payee_categorization(self, payee_id: str) -> PayeeCategorization | None:
         """Retrieve budget data from the database."""
         pass

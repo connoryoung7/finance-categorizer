@@ -9,7 +9,7 @@ operators={
     "IBAN_CODE": OperatorConfig(operator_name="replace", params={'new_value': '<REDACTED_IBAN_CODE>'}),
     "IP_ADDRESS": OperatorConfig(operator_name="replace", params={'new_value': '<REDACTED_IP_ADDRESS>'}),
     "NRP": OperatorConfig(operator_name="replace", params={'new_value': '<REDACTED_NRP>'}),
-    "LOCATION": OperatorConfig(operator_name="replace", params={'new_value': '<REDACTED_LOCATION>'}), 
+    "LOCATION": OperatorConfig(operator_name="replace", params={'new_value': '<REDACTED_LOCATION>'}),
     "PERSON": OperatorConfig(operator_name="replace", params={'new_value': '<REDACTED_PERSON>'}),
     "PHONE_NUMBER": OperatorConfig(operator_name="replace", params={'new_value': '<REDACTED_PHONE_NUMBER>'}),
     "MEDICAL_LICENSE": OperatorConfig(operator_name="replace", params={'new_value': '<REDACTED_MEDICAL_LICENSE>'}),

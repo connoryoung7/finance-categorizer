@@ -1,7 +1,7 @@
 class OrderCategorizerService:
     def __init__(self):
         pass
-        
+
 
     def categorize_order(self, order):
         """

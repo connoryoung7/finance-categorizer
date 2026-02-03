@@ -1,6 +1,6 @@
 from typing import List
 
-from models import email as email_models
+from src.models import email as email_models
 
 
 class EmailIngestionService:

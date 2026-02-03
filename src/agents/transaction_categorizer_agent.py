@@ -6,8 +6,8 @@ from ddgs import DDGS
 from mistralai import Mistral, SystemMessage, UserMessage
 from pydantic import BaseModel
 
-from models.budget import Category, ConfidenceLevel, Transaction
-from services.transaction_service import TransactionService
+from src.models.budget import Category, ConfidenceLevel, Transaction
+from src.services.transaction_service import TransactionService
 
 
 class CategorizationResult(BaseModel):
@@ -22,7 +22,7 @@ class SearchResult:
 
 class CategorizeTransactionAgent:
     """
-    This is an agent that is responsible for retrieving transaction data and the categories that the transaction could be 
+    This is an agent that is responsible for retrieving transaction data and the categories that the transaction could be
     categorized as and assigning a category for the transaction.
     """
     def __init__(self, llm_client: Mistral, transaction_service: TransactionService, categories: List[Category]):
@@ -32,12 +32,12 @@ class CategorizeTransactionAgent:
         self.categories = categories
 
     def categorize_transaction(self, transaction: Transaction) -> None:
-        if transaction.amount >= 0: 
+        if transaction.amount >= 0:
             print(f"Skipping categorization for transaction {transaction.id} as it is not an expense.")
             return
         if not transaction.payee_name:
             raise ValueError("Transaction must have a payee name to be categorized.")
-        
+
         category_id = self.transaction_service.determine_category_for_payee(payee_id=transaction.payee_id or "")
         if category_id:
             print(f"Categorized transaction {transaction.id} by payee history to category {category_id}")
@@ -45,7 +45,7 @@ class CategorizeTransactionAgent:
         else:
             if not transaction.payee_name:
                 raise ValueError("Transaction must have a payee name to be categorized.")
-            
+
             result = self.categorize_from_web_search_internet(transaction=transaction)
             print(f"Categorized transaction {transaction.id} by web search to category {result.category_id} with confidence {result.confidence_level}")
 
@@ -79,11 +79,11 @@ class CategorizeTransactionAgent:
 
     def __search_payee_name_on_internet(self, payee_name: str, max_results: int = 3) -> List[SearchResult]:
         """Makes a web search on the DuckDuckGo search engine"""
-        
+
         with DDGS() as ddgs:
             search_results = ddgs.text(query=payee_name, max_results=max_results)
             results = []
             for r in search_results:
                 results.append(SearchResult(r['title'], href=r['href'], body=r['body']))
-        
+
         return results

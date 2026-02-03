@@ -2,7 +2,7 @@ import csv
 from io import BytesIO
 from typing import List
 
-from models.amazon import AmazonOrder, AmazonOrderItem
+from src.models.amazon import AmazonOrder, AmazonOrderItem
 
 AMAZON_ONLINE_ORDER_WEBSITE = ""
 

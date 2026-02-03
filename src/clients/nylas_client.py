@@ -1,6 +1,6 @@
 from nylas import Client
 
-from clients.interfaces.email_searcher import (
+from src.interfaces.email_searcher import (
     EmailSearcher,
     EmailSearchQuery,
     EmailSearchResult,
@@ -15,5 +15,5 @@ class NylasEmailClient(EmailSearcher):
         )
         self.grant_id = grant_id
 
-    def get_emails(self, filters: EmailSearchQuery) -> EmailSearchResult:
+    def search_emails(self, query: EmailSearchQuery) -> EmailSearchResult:
         return EmailSearchResult(data=[])

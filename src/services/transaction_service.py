@@ -1,8 +1,8 @@
 from collections import Counter
 from typing import List
 
-from clients.ynab_client import YNABClient
-from models.budget import Payee, Transaction
+from src.clients.ynab_client import YNABClient
+from src.models.budget import Payee, Transaction
 
 
 class TransactionService:

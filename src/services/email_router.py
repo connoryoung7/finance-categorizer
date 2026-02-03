@@ -1,4 +1,4 @@
-from models.email import Email
+from src.models.email import Email
 
 
 class EmailRouter:

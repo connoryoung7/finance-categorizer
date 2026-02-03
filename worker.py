@@ -1,9 +1,9 @@
 from mistralai import Mistral
 
-from agents.transaction_categorizer_agent import CategorizeTransactionAgent
-from clients.ynab_client import YNABClient
 from config import settings
-from services.transaction_service import TransactionService as YNABService
+from src.agents.transaction_categorizer_agent import CategorizeTransactionAgent
+from src.clients.ynab_client import YNABClient
+from src.services.transaction_service import TransactionService as YNABService
 
 
 def main():
@@ -19,7 +19,7 @@ def main():
 
     for t in uncategorized_transactions:
         categorize_transaction_agent.categorize_transaction(transaction=t)
-        
+
 
 def categorize_latest_transactions(
     categorize_transaction_agent: CategorizeTransactionAgent,
@@ -34,7 +34,7 @@ def categorize_latest_transactions(
         if not t.category_id:
             categorize_transaction_agent.categorize_transaction(transaction=t)
             break
-    
+
 def generate_payee_categorizations(
     categorize_transaction_agent: CategorizeTransactionAgent,
     ynab_service: YNABService,

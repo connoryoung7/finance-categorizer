@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from backend.models.order import Order
+from src.models.order import Order
 
 
 class OrderCategorizer(ABC):

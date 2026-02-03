@@ -1,7 +1,7 @@
 from typing import List
 
-from backend.models.budget import Category
-from backend.models.order import Order
+from src.models.budget import Category
+from src.models.order import Order
 
 
 class OrderCategorizerAgent:
@@ -24,4 +24,4 @@ class OrderCategorizerAgent:
             }
         ])
 
-        return response 
+        return response
