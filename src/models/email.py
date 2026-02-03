@@ -1,7 +1,20 @@
 from dataclasses import dataclass
+from enum import Enum
 from typing import List, Optional
 
 from pydantic import BaseModel, EmailStr, Field
+
+
+class EmailCategory(str, Enum):
+    """Categories for classifying emails."""
+
+    RECEIPT = "receipt"
+    ORDER_CONFIRMATION = "order_confirmation"
+    SHIPPING_NOTIFICATION = "shipping_notification"
+    NEWSLETTER = "newsletter"
+    PROMOTIONAL = "promotional"
+    TRANSACTION_ALERT = "transaction_alert"
+    OTHER = "other"
 
 
 class RawBody(BaseModel):
