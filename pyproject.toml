@@ -35,7 +35,10 @@ dev = [
 line-length = 88
 
 [tool.ruff.lint]
-select = ["I"]  # Enable isort rules
+select = [
+    "I",     # isort (import sorting)
+    "W292",  # no newline at end of file
+]
 
 [tool.ruff.lint.isort]
 # Section order: standard library, third-party, first-party (local)
