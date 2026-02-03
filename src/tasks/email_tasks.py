@@ -1,11 +1,12 @@
+from src.services.email_processor import EmailProcessor
 from src.tasks import app
 
 
 @app.task
 def process_email(email_id: str) -> None:
     """Process a single email by ID."""
-    # TODO: Inject dependencies and delegate to EmailIngestionService
-    pass
+    processor = EmailProcessor()
+    processor.process_email(email_id)
 
 
 @app.task
