@@ -1,5 +1,6 @@
 from services.pii_redactor import PIIRedactor
 
+
 def main():
     pii_redactor = PIIRedactor()
     sample_text = "Hello, my name is John Doe. My address is 123 Main St, Anytown, USA. You can reach me at 908 212-3456."

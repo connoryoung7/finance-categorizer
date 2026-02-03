@@ -1,6 +1,7 @@
 from typing import List
 
-from pydantic import BaseModel, Field, PositiveInt, Decimal
+from pydantic import BaseModel, Decimal, Field, PositiveInt
+
 
 class Product(BaseModel):
     id: str

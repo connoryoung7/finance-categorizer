@@ -2,6 +2,7 @@ from typing import List
 
 from models import email as email_models
 
+
 class EmailIngestionService:
     def __init__(self):
         pass

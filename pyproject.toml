@@ -30,3 +30,17 @@ dependencies = [
 dev = [
     "ruff>=0.14.8",
 ]
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = ["I"]  # Enable isort rules
+
+[tool.ruff.lint.isort]
+# Section order: standard library, third-party, first-party (local)
+section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
+# Alphabetically sort imports within each section
+force-sort-within-sections = true
+# Detect the project name for first-party imports
+known-first-party = ["backend", "agents", "models", "routers", "services"]

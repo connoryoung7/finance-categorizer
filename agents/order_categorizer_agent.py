@@ -1,5 +1,8 @@
+from typing import List
+
 from backend.models.budget import Category
 from backend.models.order import Order
+
 
 class OrderCategorizerAgent:
     def __init__(self, llm_client):

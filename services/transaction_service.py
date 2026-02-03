@@ -1,8 +1,9 @@
 from collections import Counter
 from typing import List
 
-from models.budget import Payee, Transaction
 from clients.ynab_client import YNABClient
+from models.budget import Payee, Transaction
+
 
 class TransactionService:
     def __init__(self, ynab_client: YNABClient) -> None:

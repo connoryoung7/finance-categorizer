@@ -3,6 +3,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, EmailStr, Field
 
+
 class RawBody(BaseModel):
     text: Optional[str] = None
     html: Optional[str] = None

@@ -1,13 +1,14 @@
-from ddgs import DDGS
-from mistralai import Mistral, SystemMessage, UserMessage
-from pydantic import BaseModel
-
 from dataclasses import dataclass
 import json
 from typing import List
 
-from models.budget import Category, Transaction, ConfidenceLevel
+from ddgs import DDGS
+from mistralai import Mistral, SystemMessage, UserMessage
+from pydantic import BaseModel
+
+from models.budget import Category, ConfidenceLevel, Transaction
 from services.transaction_service import TransactionService
+
 
 class CategorizationResult(BaseModel):
     category_id: str

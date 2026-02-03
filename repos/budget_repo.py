@@ -2,6 +2,7 @@ from sqlalchemy import Engine
 
 from models.budget import PayeeCategorization
 
+
 class BudgetRepo:
     def __init___(self, db: Engine):
         self.db = db

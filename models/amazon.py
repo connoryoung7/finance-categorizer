@@ -1,6 +1,7 @@
+import datetime
+
 from pydantic import BaseClass
 
-import datetime
 
 class AmazonOrder(BaseClass):
     id: str

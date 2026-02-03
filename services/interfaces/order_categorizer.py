@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 from backend.models.order import Order
 
+
 class OrderCategorizer(ABC):
     @abstractmethod
     def format_order(self, order: str) -> Order | None:

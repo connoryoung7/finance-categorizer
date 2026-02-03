@@ -1,5 +1,6 @@
 from models.email import Email
 
+
 class EmailRouter:
     def __init__(self) -> None:
         pass

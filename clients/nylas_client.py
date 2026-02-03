@@ -1,6 +1,11 @@
 from nylas import Client
 
-from clients.interfaces.email_searcher import EmailSearchQuery, EmailSearchResult, EmailSearcher
+from clients.interfaces.email_searcher import (
+    EmailSearcher,
+    EmailSearchQuery,
+    EmailSearchResult,
+)
+
 
 class NylasEmailClient(EmailSearcher):
     def __init__(self, api_key: str, api_uril: str, grant_id: str):

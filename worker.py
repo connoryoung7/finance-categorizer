@@ -1,9 +1,10 @@
 from mistralai import Mistral
 
+from agents.transaction_categorizer_agent import CategorizeTransactionAgent
 from clients.ynab_client import YNABClient
 from config import settings
 from services.transaction_service import TransactionService as YNABService
-from agents.transaction_categorizer_agent import CategorizeTransactionAgent
+
 
 def main():
     ynab_client = YNABClient(access_token=settings.ynab_access_key, budget_id=settings.ynab_budget_id)

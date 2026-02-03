@@ -1,12 +1,13 @@
 from dotenv import load_dotenv
+
 load_dotenv()
 
 import os
 
+from html_to_markdown import MetadataConfig, convert_with_metadata
 from nylas import Client
-from config import settings
 
-from html_to_markdown import convert_with_metadata, MetadataConfig
+from config import settings
 
 nylas_client = Client(
     settings.nylas_api_key,

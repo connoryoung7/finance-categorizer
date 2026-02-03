@@ -4,6 +4,7 @@ import ynab
 
 from models.budget import Category, CategoryGroup, Payee, Transaction
 
+
 class YNABClient:
     def __init__(self, access_token: str, budget_id: str) -> None:
         self.configuration = ynab.Configuration(

@@ -6,6 +6,7 @@ from pydantic import BaseModel
 
 from models.email import Email
 
+
 class EmailSearchQuery(BaseModel):
     '''
     Filters for any query regarding searching on emails
