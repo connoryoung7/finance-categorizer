@@ -5,6 +5,9 @@ from src.agents.transaction_categorizer_agent import CategorizeTransactionAgent
 from src.clients.ynab_client import YNABClient
 from src.services.transaction_service import TransactionService as YNABService
 
+# Re-export Celery app for `celery -A worker worker`
+from src.tasks import app  # noqa: F401
+
 
 def main():
     ynab_client = YNABClient(access_token=settings.ynab_access_key, budget_id=settings.ynab_budget_id)
@@ -35,6 +38,7 @@ def categorize_latest_transactions(
             categorize_transaction_agent.categorize_transaction(transaction=t)
             break
 
+
 def generate_payee_categorizations(
     categorize_transaction_agent: CategorizeTransactionAgent,
     ynab_service: YNABService,
@@ -42,6 +46,7 @@ def generate_payee_categorizations(
     for payee in ynab_service.get_payees():
         # Check if we have a categorization for this payee
         ynab_service.determine_category_for_payee(payee_id=payee.id)
+
 
 if __name__ == "__main__":
     main()

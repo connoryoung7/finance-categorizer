@@ -11,4 +11,25 @@ class Settings(BaseSettings):
     nylas_client_id: str
     nylas_grant_id: str
 
+    # Celery settings
+    celery_broker_url: str = "redis://localhost:6379/0"
+    celery_result_backend: str = "redis://localhost:6379/0"
+
+
 settings = Settings()
+
+
+class CelerySettings:
+    """Celery configuration loaded from Settings."""
+
+    def __init__(self) -> None:
+        self.broker_url = settings.celery_broker_url
+        self.result_backend = settings.celery_result_backend
+        self.task_serializer = "json"
+        self.result_serializer = "json"
+        self.accept_content = ["json"]
+        self.timezone = "UTC"
+        self.enable_utc = True
+
+
+celery_settings = CelerySettings()
