@@ -1,5 +1,6 @@
 from typing import List
 
+from pydantic_ai import Agent
 from toon_format import toon
 
 from src.models.budget import Category
@@ -7,7 +8,7 @@ from src.models.order import Order
 
 
 class OrderCategorizerAgent:
-    def __init__(self, llm_client):
+    def __init__(self, llm_client: Agent):
         # TODO: this LLM client should just be a PydanticAI Agent.
         self.llm_client = llm_client
 
@@ -34,10 +35,27 @@ class OrderCategorizerAgent:
                 {order_content}
 
                 '''toon
-                categories{toon.encode(categories)}
+                categories{self._format_categories_to_toon(categories)}
                 '''
                 """
             }
         ])
 
         return response
+
+    def _format_categories_to_toon(self, categories: List[Category]) -> str:
+        """
+        Format a list of Category objects into TOON format.
+
+        :param categories: A list of Category objects.
+        :return: A string representing the categories in TOON format.
+        """
+        return toon.encode(
+            list(
+                map(lambda c: {
+                    "id": c.id,
+                    "name": c.name,
+                    "category_group_name": c.category_group.name
+                }, categories
+            )
+        ))

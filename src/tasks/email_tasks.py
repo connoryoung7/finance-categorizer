@@ -1,12 +1,12 @@
 from src.services.email_processor import EmailProcessor
 from src.tasks import app
 
+email_processor = EmailProcessor()
 
 @app.task
 def process_email(email_id: str) -> None:
     """Process a single email by ID."""
-    processor = EmailProcessor()
-    processor.process_email(email_id)
+    email_processor.process_email(email_id)
 
 
 @app.task

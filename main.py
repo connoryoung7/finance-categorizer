@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+import uvicorn
 
 from src.routes.health import router as health_router
 from src.routes.orders import router as orders_router
@@ -9,9 +10,5 @@ app.include_router(health_router)
 app.include_router(orders_router)
 
 
-def main():
-    print("Hello from backend!")
-
-
 if __name__ == "__main__":
-    main()
+    uvicorn.run(app, host="0.0.0.0", port=8000)
