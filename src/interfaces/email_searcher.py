@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from datetime import time
+from typing import List
 
 from pydantic import BaseModel
 
@@ -18,7 +19,7 @@ class EmailSearchQuery(BaseModel):
     limit: int | None = 100
 
 class EmailSearchResult(BaseModel):
-    data: list[Email]
+    data: List[Email]
 
 class EmailSearcher(ABC):
     @abstractmethod

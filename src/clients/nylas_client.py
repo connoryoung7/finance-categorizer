@@ -1,11 +1,14 @@
 from nylas import Client
+from nylas.models.messages import Message
+
+from typing import List
 
 from src.interfaces.email_searcher import (
     EmailSearcher,
     EmailSearchQuery,
     EmailSearchResult,
 )
-
+from src.models.email import Email
 
 class NylasEmailClient(EmailSearcher):
     def __init__(self, api_key: str, api_uril: str, grant_id: str):
@@ -16,4 +19,23 @@ class NylasEmailClient(EmailSearcher):
         self.grant_id = grant_id
 
     def search_emails(self, query: EmailSearchQuery) -> EmailSearchResult:
-        return EmailSearchResult(data=[])
+        response = self.client.messages.list(
+            identifier=self.grant_id,
+            query_params=query.model_dump(exclude_none=True),
+        )
+
+        return EmailSearchResult(data=self._format_nylas_emails(response.data))
+    
+    def _format_nylas_emails(self, nylas_emails: List[Message]) -> List[Email]:
+        return list(
+            map(
+                lambda ne: Email(
+                    id=ne.id,
+                    from_=ne.from_[0].get("email") if ne.from_ else "",
+                    to=[recipient.get("email") for recipient in ne.to] if ne.to else [],
+                    subject=ne.subject or "",
+                    content=ne.body or "",
+                ),
+                nylas_emails
+            )
+        )

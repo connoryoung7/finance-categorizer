@@ -48,7 +48,8 @@ for message in messages.data[0:25]:
 
     print("\n""Converted Content:\n")
     with open(
-            f"parsed_messages/{from_email}/{message.id}.md", "w", encoding="utf-8"
+            f"parsed_messages/{from_email}/{message.id}.md", "w",
+            encoding="utf-8"
         ) as f:
         converted = convert_with_metadata(
             message_body,
