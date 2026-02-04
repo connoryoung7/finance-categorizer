@@ -9,7 +9,6 @@ from src.models.order import Order
 
 class OrderCategorizerAgent:
     def __init__(self, llm_client: Agent):
-        # TODO: this LLM client should just be a PydanticAI Agent.
         self.llm_client = llm_client
 
     def categorize_order_content(self, order_content: str, categories: List[Category]) -> Order | None:
