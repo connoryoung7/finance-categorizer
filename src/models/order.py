@@ -1,4 +1,3 @@
-from typing import List
 
 from pydantic import BaseModel, Decimal, Field, PositiveInt
 
@@ -12,5 +11,5 @@ class Product(BaseModel):
 class Order(BaseModel):
     id: str
     total_amount: Decimal = Field(..., ge=0.00)
-    products: List[Product]
+    products: list[Product]
     status: str

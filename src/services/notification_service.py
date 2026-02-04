@@ -8,7 +8,8 @@ class NotificationService:
 
     def send_notification(self, topic: str, message: str) -> None:
         '''
-        Sends a notification to the specified topic with the given message in Markdown format.
+        Sends a notification to the specified topic with the given
+        message in Markdown format.
 
         :param self: Description
         :param topic: Description

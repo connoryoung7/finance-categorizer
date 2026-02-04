@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import List, Optional
 
 from pydantic import BaseModel, EmailStr, Field
 
@@ -18,13 +17,13 @@ class EmailCategory(str, Enum):
 
 
 class RawBody(BaseModel):
-    text: Optional[str] = None
-    html: Optional[str] = None
+    text: str | None = None
+    html: str | None = None
 
 
 class Email(BaseModel):
     subject: str
-    to: List[EmailStr]
+    to: list[EmailStr]
     from_: EmailStr = Field(..., alias="from")
     body: RawBody
 

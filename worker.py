@@ -10,12 +10,19 @@ from src.tasks import app  # noqa: F401
 
 
 def main():
-    ynab_client = YNABClient(access_token=settings.ynab_access_key, budget_id=settings.ynab_budget_id)
+    ynab_client = YNABClient(
+        access_token=settings.ynab_access_key,
+        budget_id=settings.ynab_budget_id,
+    )
     ynab_service = YNABService(ynab_client=ynab_client)
     mistral_llm = Mistral(api_key=settings.mistral_access_key)
 
     categories = ynab_client.get_categories()
-    categorize_transaction_agent = CategorizeTransactionAgent(llm_client=mistral_llm, transaction_service=ynab_service, categories=categories)
+    categorize_transaction_agent = CategorizeTransactionAgent(
+        llm_client=mistral_llm,
+        transaction_service=ynab_service,
+        categories=categories,
+    )
 
     uncategorized_transactions = ynab_client.get_uncategorized_transactions()[0:3]
     print(f"Found {len(uncategorized_transactions)} uncategorized transactions")

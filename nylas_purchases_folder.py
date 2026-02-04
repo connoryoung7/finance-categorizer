@@ -1,13 +1,12 @@
-from dotenv import load_dotenv
-
-load_dotenv()
-
 import os
 
+from dotenv import load_dotenv
 from html_to_markdown import MetadataConfig, convert_with_metadata
 from nylas import Client
 
 from config import settings
+
+load_dotenv()
 
 nylas_client = Client(
     settings.nylas_api_key,
@@ -48,7 +47,12 @@ for message in messages.data[0:25]:
     os.makedirs(f"parsed_messages/{from_email}", exist_ok=True)
 
     print("\n""Converted Content:\n")
-    with open(f"parsed_messages/{from_email}/{message.id}.md", "w", encoding="utf-8") as f:
-        converted = convert_with_metadata(message_body, metadata_config=MetadataConfig(extract_links=False, extract_images=False))    
+    with open(
+            f"parsed_messages/{from_email}/{message.id}.md", "w", encoding="utf-8"
+        ) as f:
+        converted = convert_with_metadata(
+            message_body,
+            metadata_config=MetadataConfig(extract_links=False, extract_images=False)
+            )
         f.write(converted[0])
         print(converted[1])

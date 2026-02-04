@@ -11,10 +11,20 @@ class BudgetRepo:
         """Retrieve budget data from the database."""
         pass
 
-    def create_payee_categorization(self, payee_id: str, category_id: str, status: str) -> None:
+    def create_payee_categorization(
+        self,
+        payee_id: str,
+        category_id: str,
+        status: str,
+    ) -> None:
         """Create a new budget entry in the database."""
         pass
 
-    def update_payee_categorization(self, payee_id: str, category_id: str, status: str) -> None:
+    def update_payee_categorization(
+        self,
+        payee_id: str,
+        category_id: str,
+        status: str,
+    ) -> None:
         """Update an existing budget entry in the database."""
         pass

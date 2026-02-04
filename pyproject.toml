@@ -38,6 +38,10 @@ line-length = 88
 
 [tool.ruff.lint]
 select = [
+    "E",      # pycodestyle errors
+    "F",      # Pyflakes (unused imports, undefined names)
+    "B",      # flake8-bugbear (common bugs and design problems)
+    "UP",     # pyupgrade (modern Python syntax)
     "I",      # isort (import sorting)
     "SLF001", # private-member-access
     "W292",   # no newline at end of file

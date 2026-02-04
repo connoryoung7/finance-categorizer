@@ -1,7 +1,7 @@
 import re
+from typing import final
 
 from pydantic_ai import Agent
-from typing_extensions import final
 
 from src.models.email import Email, EmailCategory
 from src.services.pii_redactor import PIIRedactor
@@ -27,7 +27,7 @@ class EmailCategorizerAgent:
         """
         company_name = self._find_company_from_email(email.from_)
         if not company_name:
-            redacted_email_content = self.pii_redactor.redact_pii(email.content)    
+            self.pii_redactor.redact_pii(email.content)
         elif company_name == "Amazon":
             return self._categorize_amazon_email(email)
 
@@ -59,7 +59,8 @@ class EmailCategorizerAgent:
         """
         subject_lower = subject.lower()
 
-        if re.search(r"order #\d+ confirmed", subject_lower) or "receipt" in subject_lower:
+        is_order_confirmed = re.search(r"order #\d+ confirmed", subject_lower)
+        if is_order_confirmed or "receipt" in subject_lower:
             return EmailCategory.RECEIPT
         elif "invoice" in subject_lower:
             return EmailCategory.INVOICE
@@ -92,6 +93,6 @@ class EmailCategorizerAgent:
         :rtype: str | None
         """
         email_domain = from_email.split("@")[-1]
-        if not email_domain in self._company_emails():
+        if email_domain not in self._company_emails():
             return None
         return self._company_emails[email_domain]

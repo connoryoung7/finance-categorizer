@@ -1,4 +1,3 @@
-from typing import List
 
 import ynab
 
@@ -15,15 +14,17 @@ class YNABClient:
 
     @staticmethod
     def __filter_special_chars(s: str) -> str:
-        """Filters out special characters from a string, leaving only alphanumeric characters and spaces."""
+        """Filters out special characters from a string,
+        leaving only alphanumeric characters and spaces.
+        """
         return ''.join(char for char in s if char.isalnum() or char == " ")
 
-    def get_categories(self) -> List[Category]:
+    def get_categories(self) -> list[Category]:
         with ynab.ApiClient(self.configuration) as api_client:
             api_instance = ynab.CategoriesApi(api_client)
             try:
                 response = api_instance.get_categories(budget_id=self.budget_id)
-                categories: List[Category] = []
+                categories: list[Category] = []
                 for group in response.data.category_groups:
                     category_group = CategoryGroup(id=group.id, name=group.name)
                     for c in group.categories:
@@ -40,7 +41,7 @@ class YNABClient:
                 print(e)
                 raise e
 
-    def get_uncategorized_transactions(self, limit: int = 20) -> List[Transaction]:
+    def get_uncategorized_transactions(self, limit: int = 20) -> list[Transaction]:
         """
         Docstring for get_uncategorized_transactions
 
@@ -52,7 +53,10 @@ class YNABClient:
         """
         with ynab.ApiClient(self.configuration) as api_client:
             api_instance = ynab.TransactionsApi(api_client)
-            response = api_instance.get_transactions(budget_id=self.budget_id, type="uncategorized")
+            response = api_instance.get_transactions(
+                budget_id=self.budget_id,
+                type="uncategorized",
+            )
             transactions = []
             for t in response.data.transactions:
                 transactions.append(
@@ -81,16 +85,16 @@ class YNABClient:
                 )
                 return response.data
             except Exception as e:
-                print("Exception when calling PayeesAPI->get_payees: %s\n" % e)
+                print(f"Exception when calling PayeesAPI->get_payees: {e}\n")
 
-    def get_payees(self) -> List[Payee]:
+    def get_payees(self) -> list[Payee]:
         with ynab.ApiClient(self.configuration) as api_client:
             api_instance = ynab.PayeesApi(api_client)
             try:
                 response = api_instance.get_payees(
                     budget_id=self.budget_id,
                 )
-                payees: List[Payee] = []
+                payees: list[Payee] = []
                 for p in response.data.payees:
                     payees.append(
                         Payee(
@@ -100,7 +104,7 @@ class YNABClient:
                     )
                 return payees
             except Exception as e:
-                print("Exception when calling PayeesAPI->get_payees: %s\n" % e)
+                print(f"Exception when calling PayeesAPI->get_payees: {e}\n")
                 raise e
 
     def categorize_transaction(self, transaction: Transaction):
@@ -121,7 +125,7 @@ class YNABClient:
             except Exception as e:
                 raise e
 
-    def get_transactions_by_payee_id(self, payee_id: str) -> List[Transaction]:
+    def get_transactions_by_payee_id(self, payee_id: str) -> list[Transaction]:
         with ynab.ApiClient(self.configuration) as api_client:
             api_instance = ynab.TransactionsApi(api_client)
             try:
@@ -132,7 +136,7 @@ class YNABClient:
                     payee_id=payee_id,
                 )
 
-                transactions: List[Transaction] = []
+                transactions: list[Transaction] = []
 
                 for t in response.data.transactions:
                     transactions.append(

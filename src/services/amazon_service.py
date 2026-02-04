@@ -1,6 +1,5 @@
 import csv
 from io import BytesIO
-from typing import List
 
 from src.models.amazon import AmazonOrder, AmazonOrderItem
 
@@ -11,12 +10,12 @@ class AmazonService:
         pass
 
     @staticmethod
-    def parse_amazon_order_file(file_bytes: bytes) -> List[AmazonOrder]:
+    def parse_amazon_order_file(file_bytes: bytes) -> list[AmazonOrder]:
         byte_stream = BytesIO(file_bytes)
         reader = csv.reader(byte_stream.read().decode('utf-8').splitlines())
 
         orders: dict[str, AmazonOrder] = {}
-        order_items: dict[str, List[AmazonOrderItem]] = {}
+        order_items: dict[str, list[AmazonOrderItem]] = {}
         for row in reader:
             if row["Website"] == AMAZON_ONLINE_ORDER_WEBSITE:
                 order_id = row["Order ID"]
