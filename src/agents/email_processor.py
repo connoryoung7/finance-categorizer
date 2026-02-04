@@ -7,9 +7,9 @@ from src.models.email import Email, EmailCategory
 from src.services.pii_redactor import PIIRedactor
 
 
-class EmailCategorizerAgent:
+class EmailProcessorAgent:
     """
-    Docstring for EmailCategorizerAgent
+    Docstring for EmailProcessorAgent
     """
     def __init__(self, llm_client: Agent, pii_redactor: PIIRedactor):
         self.llm_client = llm_client
