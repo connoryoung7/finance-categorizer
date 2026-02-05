@@ -1,11 +1,17 @@
 import re
 from typing import final
 
+from pydantic import BaseModel
 from pydantic_ai import Agent
 
 from src.models.email import Email, EmailCategory
+from src.models.order import Order
 from src.services.pii_redactor import PIIRedactor
 
+
+class EmailProcessorResult(BaseModel):
+    category: EmailCategory
+    order: Order | None
 
 class EmailProcessorAgent:
     """
@@ -15,9 +21,12 @@ class EmailProcessorAgent:
         self.llm_client = llm_client
         self.pii_redactor = pii_redactor
 
+    def process_email_content(self, email: Email) -> EmailCategory:
+        self.categorize_email_content(email)
+
     def categorize_email_content(self, email: Email) -> EmailCategory:
         """
-        
+        Categorize an email based on its content. It first looks at        
         
         :param self: Description
         :param email: The incoming email that was sent to the personan inbox

@@ -1,7 +1,6 @@
 import os
 
 from dotenv import load_dotenv
-from html_to_markdown import MetadataConfig, convert_with_metadata
 from nylas import Client
 
 from config import settings
@@ -24,16 +23,6 @@ messages = nylas_client.messages.list(
 
 
 for message in messages.data[0:25]:
-    response = nylas_client.messages.clean_messages(
-        identifier=grant_id,
-        request_body={
-            "message_id": [message.id],
-            "html_as_markdown": True,
-        }
-    )
-
-    message_body = response.data[0].body
-
     print(f"{message.id}, {message.subject}\n")
     from_email = message.from_[0].get("email")
     if message.from_:
@@ -48,12 +37,13 @@ for message in messages.data[0:25]:
 
     print("\n""Converted Content:\n")
     with open(
-            f"parsed_messages/{from_email}/{message.id}.md", "w",
+            f"parsed_messages/{from_email}/{message.id}.html", "w",
             encoding="utf-8"
         ) as f:
-        converted = convert_with_metadata(
-            message_body,
-            metadata_config=MetadataConfig(extract_links=False, extract_images=False)
-            )
-        f.write(converted[0])
-        print(converted[1])
+        # converted = convert_with_metadata(
+        #     message.body,
+        #     metadata_config=MetadataConfig(extract_links=False, extract_images=False)
+        #     )
+        # f.write(converted[0])
+        # print(converted[1])
+        f.write(message.body)

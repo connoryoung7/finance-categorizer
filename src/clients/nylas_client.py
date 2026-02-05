@@ -1,7 +1,6 @@
+
 from nylas import Client
 from nylas.models.messages import Message
-
-from typing import List
 
 from src.interfaces.email_searcher import (
     EmailSearcher,
@@ -9,6 +8,7 @@ from src.interfaces.email_searcher import (
     EmailSearchResult,
 )
 from src.models.email import Email
+
 
 class NylasEmailClient(EmailSearcher):
     def __init__(self, api_key: str, api_uril: str, grant_id: str):
@@ -26,7 +26,7 @@ class NylasEmailClient(EmailSearcher):
 
         return EmailSearchResult(data=self._format_nylas_emails(response.data))
     
-    def _format_nylas_emails(self, nylas_emails: List[Message]) -> List[Email]:
+    def _format_nylas_emails(self, nylas_emails: list[Message]) -> list[Email]:
         return list(
             map(
                 lambda ne: Email(
