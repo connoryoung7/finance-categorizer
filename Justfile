@@ -5,3 +5,7 @@ lint:
 # Run ruff linter with auto-fix
 fix-lint:
     uv run ruff check --fix .
+
+# Run pytest tests
+test:
+    uv run pytest tests/
