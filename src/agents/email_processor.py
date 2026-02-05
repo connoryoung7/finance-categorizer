@@ -21,10 +21,15 @@ class EmailProcessorAgent:
         self.llm_client = llm_client
         self.pii_redactor = pii_redactor
 
-    def process_email_content(self, email: Email) -> EmailCategory:
-        self.categorize_email_content(email)
+    def process_email_content(self, email: Email) -> Order | None:
+        category = self._categorize_email_content(email)
 
-    def categorize_email_content(self, email: Email) -> EmailCategory:
+        if category == EmailCategory.RECEIPT:
+            # TODO: Implement receipt processing logic
+            pass
+            
+
+    def _categorize_email_content(self, email: Email) -> EmailCategory:
         """
         Categorize an email based on its content. It first looks at        
         
