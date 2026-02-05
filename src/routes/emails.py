@@ -1,7 +1,7 @@
 import hashlib
 import hmac
 import os
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import APIRouter, Header, Request, status
 from fastapi.responses import PlainTextResponse
@@ -17,8 +17,8 @@ webhooks: list[Any] = []
 class EmailObject(BaseModel):
     id: str
     grant_id: str
-    subject: Optional[str] = None
-    body: Optional[str] = None
+    subject: str | None = None
+    body: str | None = None
 
 
 class WebhookEvent(BaseModel):
@@ -30,7 +30,7 @@ class WebhookEvent(BaseModel):
     data: dict
 
 
-def verify_signature(message: bytes, key: str, signature: Optional[str]) -> bool:
+def verify_signature(message: bytes, key: str, signature: str | None) -> bool:
     """Verify the Nylas webhook signature."""
     if not signature or not key:
         return False
@@ -53,8 +53,8 @@ def create_email_routes() -> APIRouter:
     @routes.post("/nylas")
     async def webhook(
         request: Request,
-        event: Optional[WebhookEvent] = None,
-        x_nylas_signature: Optional[str] = Header(None),
+        event: WebhookEvent | None = None,
+        x_nylas_signature: str | None = Header(None),
     ):
         if request.method == "GET":
             challenge = request.query_params.get("challenge")

@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import List
 
 from src.models.budget import Payee, Transaction
 
@@ -11,7 +10,7 @@ class TransactionServiceInterface(ABC):
     def get_uncategorized_transactions(
         self,
         from_date: str | None = None,
-    ) -> List[Transaction]:
+    ) -> list[Transaction]:
         """
         Get all uncategorized transactions.
 
@@ -39,7 +38,7 @@ class TransactionServiceInterface(ABC):
         pass
 
     @abstractmethod
-    def get_transactions_by_payee(self, payee_id: str) -> List[Transaction]:
+    def get_transactions_by_payee(self, payee_id: str) -> list[Transaction]:
         """
         Get all transactions for a specific payee.
 
@@ -65,7 +64,7 @@ class TransactionServiceInterface(ABC):
         pass
 
     @abstractmethod
-    def get_payees(self) -> List[Payee]:
+    def get_payees(self) -> list[Payee]:
         """
         Get all payees.
 

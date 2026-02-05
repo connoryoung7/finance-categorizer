@@ -61,7 +61,7 @@ class EmailService(EmailSender):
         logger.info(f"Subject: {subject}")
         logger.info(f"HTML content length: {len(html_content)} characters")
         print(f"\n{'='*50}")
-        print(f"EMAIL WOULD BE SENT")
+        print("EMAIL WOULD BE SENT")
         print(f"{'='*50}")
         print(f"To: {to_email}")
         print(f"Subject: {subject}")
