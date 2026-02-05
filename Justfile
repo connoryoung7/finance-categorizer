@@ -1,3 +1,7 @@
+# Set up the project and install dependencies
+setup:
+    uv sync --frozen
+
 # Run ruff linter
 lint:
     uv run ruff check .
