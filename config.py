@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     nylas_api_uri: str
     nylas_client_id: str
     nylas_grant_id: str
+    nylas_webhook_secret: str
 
     # Celery settings
     celery_broker_url: str = "redis://localhost:6379/0"

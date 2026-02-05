@@ -1,6 +1,47 @@
+import hashlib
+import hmac
+import os
+from typing import Any, Optional
+
+from fastapi import APIRouter, Header, Request, status
+from fastapi.responses import PlainTextResponse
+from pydantic import BaseModel
+
+from src.tasks.email_tasks import process_email
+
+WEBHOOK_SECRET = os.environ.get("NYLAS_WEBHOOK_SECRET", "")
+
+webhooks: list[Any] = []
 
 
-from fastapi import APIRouter
+class EmailObject(BaseModel):
+    id: str
+    grant_id: str
+    subject: Optional[str] = None
+    body: Optional[str] = None
+
+
+class WebhookEvent(BaseModel):
+    specversion: str
+    type: str
+    source: str
+    id: str
+    time: str
+    data: dict
+
+
+def verify_signature(message: bytes, key: str, signature: Optional[str]) -> bool:
+    """Verify the Nylas webhook signature."""
+    if not signature or not key:
+        return False
+    digest = hmac.new(key.encode(), message, hashlib.sha256).hexdigest()
+    return hmac.compare_digest(digest, signature)
+
+
+def store_event_json(event: WebhookEvent) -> None:
+    """Store the raw event JSON for later processing."""
+    # TODO: Implement persistent storage
+    pass
 
 
 def create_email_routes() -> APIRouter:
@@ -8,5 +49,40 @@ def create_email_routes() -> APIRouter:
         prefix="/webhooks/emails",
         tags=["emails", "webhooks"],
     )
+
+    @routes.post("/nylas")
+    async def webhook(
+        request: Request,
+        event: Optional[WebhookEvent] = None,
+        x_nylas_signature: Optional[str] = Header(None),
+    ):
+        if request.method == "GET":
+            challenge = request.query_params.get("challenge")
+            if challenge:
+                print(" * Nylas connected to the webhook!")
+                return PlainTextResponse(challenge)
+            return PlainTextResponse(
+                "No challenge", status_code=status.HTTP_400_BAD_REQUEST
+            )
+        # POST method
+        body = await request.body()
+        is_genuine = verify_signature(
+            message=body,
+            key=WEBHOOK_SECRET,
+            signature=x_nylas_signature,
+        )
+        if not is_genuine:
+            return PlainTextResponse("Signature verification failed!", status_code=401)
+
+        # Store the raw event JSON
+        if event:
+            store_event_json(event)
+            email_obj = EmailObject(**event.data["object"])
+            process_email.delay(email_obj.id)
+        else:
+            return PlainTextResponse("No event data", status_code=400)
+
+        webhooks.append(email_obj)
+        return PlainTextResponse("Webhook received", status_code=200)
 
     return routes
