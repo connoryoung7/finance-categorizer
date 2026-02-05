@@ -3,14 +3,17 @@ from pathlib import Path
 from jinja2 import Template
 from mjml import mjml2html
 
+from src.interfaces.email_sender import EmailSender
 from src.logger import logger
 from src.models.budget import Transaction
 
 TEMPLATES_DIR = Path(__file__).parent.parent / "templates" / "emails"
 
 
-class EmailService:
+class EmailService(EmailSender):
     """Service for sending formatted HTML emails."""
+    def __init__(self):
+        super().__init__()
 
     def _load_template(self, template_name: str) -> str:
         """Load an MJML template from the templates directory."""
@@ -31,7 +34,7 @@ class EmailService:
         dollars = amount / 1000
         return f"${dollars:,.2f}"
 
-    def send_transaction_alert(self, transaction: Transaction, to_email: str) -> None:
+    def send_transaction_email(self, to_email: str, transaction: Transaction) -> None:
         """Send a transaction alert email."""
         mjml_template = self._load_template("transaction_alert")
 
