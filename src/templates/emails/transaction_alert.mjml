@@ -1,0 +1,47 @@
+<mjml>
+  <mj-head>
+    <mj-title>Transaction Alert</mj-title>
+    <mj-attributes>
+      <mj-all font-family="Arial, sans-serif" />
+      <mj-text font-size="14px" color="#333333" line-height="1.5" />
+    </mj-attributes>
+  </mj-head>
+  <mj-body background-color="#f4f4f5">
+    <!-- Header -->
+    <mj-section background-color="#4F46E5" padding="20px">
+      <mj-column>
+        <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
+          Finance Categorizer
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Main Content -->
+    <mj-section background-color="#ffffff" padding="30px">
+      <mj-column>
+        <mj-text font-size="20px" font-weight="bold" padding-bottom="10px">
+          New Transaction Detected
+        </mj-text>
+        <mj-text>
+          A new transaction has been categorized:
+        </mj-text>
+        <mj-divider border-color="#e5e7eb" padding="20px 0" />
+        <mj-text>
+          <strong>Amount:</strong> {{ amount }}<br />
+          <strong>Merchant:</strong> {{ merchant }}<br />
+          <strong>Category:</strong> {{ category }}<br />
+          <strong>Date:</strong> {{ date }}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="20px">
+      <mj-column>
+        <mj-text align="center" font-size="12px" color="#666666">
+          This is an automated message from Finance Categorizer.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
