@@ -1,10 +1,11 @@
 from sqlalchemy import Engine
 
+from src.interfaces.budget_repo import BudgetRepoInterface
 from src.models.budget import PayeeCategorization
 
 
-class BudgetRepo:
-    def __init___(self, db: Engine):
+class BudgetPostgresRepo(BudgetRepoInterface):
+    def __init__(self, db: Engine):
         self.db = db
 
     def get_payee_categorization(self, payee_id: str) -> PayeeCategorization | None:

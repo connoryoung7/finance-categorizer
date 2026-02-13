@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 from nylas import Client
 
-from config import settings
+from src.config import settings
 
 load_dotenv()
 

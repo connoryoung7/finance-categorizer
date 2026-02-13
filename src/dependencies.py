@@ -1,7 +1,7 @@
 from functools import lru_cache
 
-from config import settings
 from src.clients.ynab_client import YNABClient
+from src.config import settings
 from src.services.transaction_service import TransactionService
 
 
