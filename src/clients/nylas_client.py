@@ -11,6 +11,9 @@ from src.models.email import Email
 
 
 class NylasEmailClient(EmailSearcher):
+    """
+    The client that leverages the Nylas API to search for emails based on specific queries.
+    """
     def __init__(self, api_key: str, api_uril: str, grant_id: str):
         self.client = Client(
             api_key=api_key,
