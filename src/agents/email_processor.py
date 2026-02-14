@@ -2,7 +2,6 @@ import re
 from typing import final
 
 from html_to_markdown import convert_to_markdown
-from pydantic import BaseModel
 from pydantic_ai import Agent
 
 from src.models.email import Email, EmailCategory
@@ -59,7 +58,8 @@ class EmailProcessorAgent:
         """
         redacted_markdown = self._convert_email_to_markdown(email)
 
-        prompt = f"""Categorize the following email content into one of these categories:
+        prompt = f"""
+        Categorize the following email content into one of these categories:
 - receipt: Purchase receipts or payment confirmations
 - order_confirmation: Order placement confirmations
 - shipping_notification: Shipping or delivery updates
