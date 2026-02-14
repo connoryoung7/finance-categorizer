@@ -1,9 +1,9 @@
 import re
 from typing import final
 
-from html_to_markdown import convert_to_markdown
 from pydantic_ai import Agent
 
+from src.interfaces.html_to_markdown_converter import HTMLToMarkdownConverter
 from src.models.email import Email, EmailCategory
 from src.models.order import Order
 from src.services.pii_redactor import PIIRedactor
@@ -15,9 +15,15 @@ class EmailProcessorAgent:
     Handles email categorization (receipt, invoice, newsletter, etc.)
     and extracts order details from receipt emails.
     """
-    def __init__(self, llm_client: Agent, pii_redactor: PIIRedactor):
+    def __init__(
+            self,
+            llm_client: Agent, 
+            pii_redactor: PIIRedactor,
+            html_to_markdown_converter: HTMLToMarkdownConverter
+        ):
         self.llm_client = llm_client
         self.pii_redactor = pii_redactor
+        self.html_to_markdown_converter = html_to_markdown_converter
 
     def categorize_email(self, email: Email) -> EmailCategory:
         """Categorize an email based on its subject line.
@@ -32,18 +38,27 @@ class EmailProcessorAgent:
         if email_category == EmailCategory.RECEIPT:
             return EmailCategory.RECEIPT
         else:
-            pass
-            # return self._categorize_email_content(email)
+            # TODO: Process the email body content for further categorization if subject is not conclusive
+            return EmailCategory.OTHER
 
     def process_email_content(self, email: Email) -> Order | None:
         """
         Process the content of a receipt email and extract order details.
         """
-        # category = self._categorize_email_content(email)
+        category = self._categorize_email_content(email)
 
-        # if category == EmailCategory.RECEIPT:
-        #     # TODO: Implement receipt processing logic
-        #     pass
+        if category == EmailCategory.RECEIPT:
+            markdown = self._convert_email_to_markdown(email.body.html or email.body.text or "")
+            self.llm_client.run_sync(
+                f"""Extract order details from the following receipt email content in markdown format:
+                {markdown}
+                Respond with a JSON object containing the following fields:
+                - order_id: The unique identifier for the order
+                - date: The date of the order
+                - total_amount: The total amount of the order
+                - items: A list of items in the order, where each item has:
+                """
+            )
         pass
             
 
@@ -60,18 +75,18 @@ class EmailProcessorAgent:
 
         prompt = f"""
         Categorize the following email content into one of these categories:
-- receipt: Purchase receipts or payment confirmations
-- order_confirmation: Order placement confirmations
-- shipping_notification: Shipping or delivery updates
-- newsletter: Newsletter subscriptions
-- promotional: Marketing or promotional emails
-- transaction_alert: Bank or financial transaction alerts
-- other: Any other type of email
+        - receipt: Purchase receipts or payment confirmations
+        - order_confirmation: Order placement confirmations
+        - shipping_notification: Shipping or delivery updates
+        - newsletter: Newsletter subscriptions
+        - promotional: Marketing or promotional emails
+        - transaction_alert: Bank or financial transaction alerts
+        - other: Any other type of email
 
-Email content:
-{redacted_markdown}
+        Email content:
+        {redacted_markdown}
 
-Respond with only the category name (e.g., "receipt", "newsletter", etc.)."""
+        Respond with only the category name (e.g., "receipt", "newsletter", etc.)."""
 
         result = self.llm_client.run_sync(prompt)
         category_str = result.data.strip().lower()
@@ -105,7 +120,7 @@ Respond with only the category name (e.g., "receipt", "newsletter", etc.)."""
         :param email: The email to convert.
         :return: PII-redacted markdown content.
         """
-        markdown_content = convert_to_markdown(email.body.html or email.body.text or "")
+        markdown_content = self.html_to_markdown_converter.convert(email.body.html or email.body.text or "")
         redacted_content = self.pii_redactor.redact_pii(markdown_content)
         return redacted_content
 

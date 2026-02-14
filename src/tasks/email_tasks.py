@@ -1,11 +1,18 @@
-from src.services.email_processor import EmailProcessor
+from src.agents.email_processor import EmailProcessor
 from src.tasks import app
 
 email_processor = EmailProcessor()
 
 @app.task
 def process_email(email_id: str) -> None:
-    """Process a single email by ID."""
+    """
+    Have the EmailProcessor agent process a single email by ID.
+
+    Args:
+        email_id: The unique identifier of the email to process.
+    Returns:
+        None
+    """
     email_processor.process_email(email_id)
 
 
