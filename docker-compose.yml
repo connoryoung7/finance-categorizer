@@ -1,47 +1,50 @@
+x-app-env: &app-env
+  CELERY_BROKER_URL: redis://redis:6379/0
+  CELERY_RESULT_BACKEND: redis://redis:6379/0
+
 services:
   redis:
     image: redis:7-alpine
-    ports:
-      - "6379:6379"
+    ports: ["6379:6379"]
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 3s
       retries: 5
+    restart: unless-stopped
 
   api:
-    build: .
+    build:
+      context: .
+      target: prod
     command: uvicorn src.entrypoints.api:app --host 0.0.0.0 --port 8000
-    ports:
-      - "8000:8000"
+    ports: ["8000:8000"]
     env_file: .env
-    environment:
-      CELERY_BROKER_URL: redis://redis:6379/0
-      CELERY_RESULT_BACKEND: redis://redis:6379/0
+    environment: *app-env
     depends_on:
-      redis:
-        condition: service_healthy
+      redis: { condition: service_healthy }
+    restart: unless-stopped
 
   worker:
-    build: .
+    build:
+      context: .
+      target: prod
     command: celery -A src.entrypoints.celery_worker worker --loglevel=info
     env_file: .env
-    environment:
-      CELERY_BROKER_URL: redis://redis:6379/0
-      CELERY_RESULT_BACKEND: redis://redis:6379/0
+    environment: *app-env
     depends_on:
-      redis:
-        condition: service_healthy
+      redis: { condition: service_healthy }
+    restart: unless-stopped
 
   flower:
-    build: .
-    command: celery -A src.entrypoints.celery_worker flower
-    ports:
-      - "5555:5555"
+    build:
+      context: .
+      target: prod
+    command: celery -A src.entrypoints.celery_worker flower --port=5555
+    ports: ["5555:5555"]
     env_file: .env
-    environment:
-      CELERY_BROKER_URL: redis://redis:6379/0
-      CELERY_RESULT_BACKEND: redis://redis:6379/0
+    environment: *app-env
     depends_on:
       - redis
       - worker
+    restart: unless-stopped

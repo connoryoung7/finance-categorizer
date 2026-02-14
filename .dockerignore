@@ -9,3 +9,11 @@ __pycache__/
 tests/
 parsed_messages/
 *.md
+Dockerfile
+docker-compose*.yml
+.dockerignore
+Justfile
+.vscode/
+.idea/
+.claude/
+.DS_Store
