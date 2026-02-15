@@ -27,6 +27,9 @@ class Transaction(BaseModel):
     category_id: str | None
     category_name: str | None
     approved: bool
+    account_id: str | None = None
+    account_name: str | None = None
+    deleted: bool = False
 
 class Payee(BaseModel):
     id: str

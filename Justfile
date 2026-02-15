@@ -22,6 +22,18 @@ api:
 worker:
     uv run celery -A src.entrypoints.celery_worker worker --loglevel=info
 
+# Run the Celery beat scheduler
+beat:
+    uv run celery -A src.entrypoints.celery_worker beat --loglevel=info
+
+# Run Alembic migrations to head
+migrate:
+    uv run alembic upgrade head
+
+# Create a new Alembic migration (usage: just migration "description")
+migration message:
+    uv run alembic revision --autogenerate -m "{{message}}"
+
 # Run all services in development mode
 docker-dev:
     docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build

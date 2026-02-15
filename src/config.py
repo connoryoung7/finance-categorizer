@@ -1,3 +1,4 @@
+from celery.schedules import crontab
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -11,6 +12,9 @@ class Settings(BaseSettings):
     nylas_client_id: str
     nylas_grant_id: str
     nylas_webhook_secret: str
+
+    # Database settings
+    database_url: str = "postgresql://postgres:postgres@localhost:5432/finance_categorizer"
 
     # Celery settings
     celery_broker_url: str = "redis://localhost:6379/0"
@@ -31,6 +35,12 @@ class CelerySettings:
         self.accept_content = ["json"]
         self.timezone = "UTC"
         self.enable_utc = True
+        self.beat_schedule = {
+            "sync-ynab-transactions": {
+                "task": "src.tasks.transaction_tasks.sync_ynab_transactions",
+                "schedule": crontab(minute=0, hour="*/6"),
+            },
+        }
 
 
 celery_settings = CelerySettings()

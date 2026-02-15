@@ -1,4 +1,3 @@
-
 import ynab
 
 from src.models.budget import Category, CategoryGroup, Payee, Transaction
@@ -40,6 +39,53 @@ class YNABClient:
             except Exception as e:
                 print(e)
                 raise e
+
+    def get_transactions(
+        self,
+        since_date: str | None = None,
+        last_knowledge_of_server: int | None = None,
+    ) -> tuple[list[Transaction], int]:
+        """Fetch transactions from YNAB, supporting incremental sync.
+
+        Args:
+            since_date: Only return transactions on or after this date (YYYY-MM-DD).
+            last_knowledge_of_server: YNAB server knowledge for delta sync.
+
+        Returns:
+            Tuple of (transactions, server_knowledge).
+        """
+        with ynab.ApiClient(self.configuration) as api_client:
+            api_instance = ynab.TransactionsApi(api_client)
+
+            kwargs: dict = {"budget_id": self.budget_id}
+            if since_date is not None:
+                kwargs["since_date"] = since_date
+            if last_knowledge_of_server is not None:
+                kwargs["last_knowledge_of_server"] = last_knowledge_of_server
+
+            response = api_instance.get_transactions(**kwargs)
+
+            transactions = []
+            for t in response.data.transactions:
+                transactions.append(
+                    Transaction(
+                        id=t.id,
+                        payee_id=t.payee_id,
+                        payee_name=t.payee_name,
+                        date=t.var_date.strftime("%Y-%m-%d"),
+                        amount=t.amount,
+                        memo=t.memo,
+                        category_id=t.category_id,
+                        category_name=t.category_name,
+                        approved=t.approved,
+                        account_id=t.account_id,
+                        account_name=t.account_name,
+                        deleted=t.deleted,
+                    )
+                )
+
+            server_knowledge = response.data.server_knowledge
+            return transactions, server_knowledge
 
     def get_uncategorized_transactions(self, limit: int = 20) -> list[Transaction]:
         """
