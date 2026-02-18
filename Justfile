@@ -45,3 +45,15 @@ docker-prod:
 # Tear down all services and remove volumes
 docker-down:
     docker compose down -v
+
+# Perform a security scan on the Docker image using Trivy
+security-scan:
+    docker build -t finance-categorizer .
+    docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+    -v trivy-cache:/root/.cache/ \
+    -v "$PWD":/report \
+    aquasec/trivy:latest image \
+    --format sarif \
+    --output /report/trivy-image-report.sarif \
+    --detection-priority comprehensive \
+    --severity CRITICAL finance-categorizer

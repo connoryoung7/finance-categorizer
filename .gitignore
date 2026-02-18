@@ -207,3 +207,7 @@ marimo/_lsp/
 __marimo__/
 
 parsed_messages/
+email_logs/
+
+# Static analysis tool outputs
+*.sarif
