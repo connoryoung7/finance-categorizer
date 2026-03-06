@@ -12,6 +12,7 @@ TEMPLATES_DIR = Path(__file__).parent.parent / "templates" / "emails"
 
 class EmailService(EmailSender):
     """Service for sending formatted HTML emails."""
+
     def __init__(self):
         super().__init__()
 
@@ -60,10 +61,10 @@ class EmailService(EmailSender):
         logger.info(f"Email would be sent to: {to_email}")
         logger.info(f"Subject: {subject}")
         logger.info(f"HTML content length: {len(html_content)} characters")
-        print(f"\n{'='*50}")
+        print(f"\n{'=' * 50}")
         print("EMAIL WOULD BE SENT")
-        print(f"{'='*50}")
+        print(f"{'=' * 50}")
         print(f"To: {to_email}")
         print(f"Subject: {subject}")
         print(f"HTML Content Length: {len(html_content)} characters")
-        print(f"{'='*50}\n")
+        print(f"{'=' * 50}\n")

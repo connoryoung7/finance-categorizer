@@ -1,15 +1,13 @@
 import hashlib
 import hmac
-import os
 from typing import Any
 
 from fastapi import APIRouter, Header, Request, status
 from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel
 
+from src.config import settings
 from src.tasks.email_tasks import process_email
-
-WEBHOOK_SECRET = os.environ.get("NYLAS_WEBHOOK_SECRET", "")
 
 webhooks: list[Any] = []
 
@@ -59,7 +57,6 @@ def create_email_routes() -> APIRouter:
         if request.method == "GET":
             challenge = request.query_params.get("challenge")
             if challenge:
-                print(" * Nylas connected to the webhook!")
                 return PlainTextResponse(challenge)
             return PlainTextResponse(
                 "No challenge", status_code=status.HTTP_400_BAD_REQUEST
@@ -68,7 +65,7 @@ def create_email_routes() -> APIRouter:
         body = await request.body()
         is_genuine = verify_signature(
             message=body,
-            key=WEBHOOK_SECRET,
+            key=settings.nylas_webhook_secret,
             signature=x_nylas_signature,
         )
         if not is_genuine:

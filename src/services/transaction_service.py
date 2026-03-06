@@ -33,9 +33,7 @@ class TransactionService:
         transactions. If there are multiple categories or no categories,
         returns None. Otherwise, returns the single category ID.
         """
-        transactions = self.ynab_client.get_transactions_by_payee_id(
-            payee_id=payee_id
-        )
+        transactions = self.ynab_client.get_transactions_by_payee_id(payee_id=payee_id)
         categorized_approved_transactions = [
             t for t in transactions if t.approved and t.category_id is not None
         ]

@@ -23,12 +23,19 @@ class RawBody(BaseModel):
 
 class Email(BaseModel):
     subject: str
+    "The email address of the sender."
     to: list[EmailStr]
     from_: EmailStr = Field(..., alias="from")
+
+    "The raw body of the email, which may include both text and HTML versions."
     body: RawBody
+
+    "Unix timestamp representing when the email was received."
+    received_at: int | None = None
 
     class Config:
         populate_by_name = True
+
 
 @dataclass
 class EmailFilters:

@@ -8,6 +8,7 @@ class AmazonOrder(BaseModel):
     date: datetime.date
     total_cost: int
 
+
 class AmazonOrderItem(BaseModel):
     order_id: str
     product_name: str

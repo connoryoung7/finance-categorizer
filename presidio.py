@@ -13,5 +13,6 @@ def main():
     print("\nRedacted Text:")
     print(redacted_text)
 
+
 if __name__ == "__main__":
     main()

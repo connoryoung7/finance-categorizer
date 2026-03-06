@@ -2,6 +2,7 @@ class OllamaClient:
     """
     Docstring for OllamaClient
     """
+
     def __init__(self, base_url: str, model_name: str):
         self.base_url = base_url
         self.model_name = model_name

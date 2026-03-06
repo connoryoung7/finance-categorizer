@@ -13,11 +13,13 @@ class CategorizationResult(BaseModel):
     category_id: str
     confidence_level: float
 
+
 @dataclass
 class SearchResult:
     title: str
     href: str
     body: str
+
 
 class CategorizeTransactionAgent:
     """
@@ -45,9 +47,7 @@ class CategorizeTransactionAgent:
             )
             return
         if not transaction.payee_name:
-            raise ValueError(
-                "Transaction must have a payee name to be categorized."
-            )
+            raise ValueError("Transaction must have a payee name to be categorized.")
 
         category_id = self.transaction_service.determine_category_for_payee(
             payee_id=transaction.payee_id or ""
@@ -67,9 +67,7 @@ class CategorizeTransactionAgent:
                     "Transaction must have a payee name to be categorized."
                 )
 
-            result = self.categorize_from_web_search_internet(
-                transaction=transaction
-            )
+            result = self.categorize_from_web_search_internet(transaction=transaction)
             print(
                 f"Categorized transaction {transaction.id} by web search "
                 f"to category {result.category_id} "
@@ -86,7 +84,6 @@ class CategorizeTransactionAgent:
                     f"Skipping categorization for transaction {transaction.id} "
                     f"due to low confidence level of {result.confidence_level}"
                 )
-
 
     def categorize_from_web_search_internet(
         self,
@@ -123,15 +120,13 @@ class CategorizeTransactionAgent:
                         f"{json.dumps([c.model_dump_json() for c in self.categories])} "
                         f"search_results: {search_results}"
                     )
-                )
+                ),
             ],
             response_format=CategorizationResult,
-            temperature=0.0
+            temperature=0.0,
         )
 
-        return CategorizationResult.model_validate(
-            response.choices[0].message.parsed
-        )
+        return CategorizationResult.model_validate(response.choices[0].message.parsed)
 
     def __search_payee_name_on_internet(
         self,
@@ -149,9 +144,9 @@ class CategorizeTransactionAgent:
             for r in search_results:
                 results.append(
                     SearchResult(
-                        r['title'],
-                        href=r['href'],
-                        body=r['body'],
+                        r["title"],
+                        href=r["href"],
+                        body=r["body"],
                     )
                 )
 

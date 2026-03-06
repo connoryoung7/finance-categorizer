@@ -2,7 +2,6 @@ class OrderCategorizerService:
     def __init__(self):
         pass
 
-
     def categorize_order(self, order):
         """
         Categorize an order based on predefined rules.
@@ -13,4 +12,4 @@ class OrderCategorizerService:
         for category, rule in self.category_rules.items():
             if rule(order):
                 return category
-        return 'Uncategorized'
+        return "Uncategorized"

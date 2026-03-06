@@ -15,12 +15,13 @@ class EmailProcessorAgent:
     Handles email categorization (receipt, invoice, newsletter, etc.)
     and extracts order details from receipt emails.
     """
+
     def __init__(
-            self,
-            llm_client: Agent, 
-            pii_redactor: PIIRedactor,
-            html_to_markdown_converter: HTMLToMarkdownConverter
-        ):
+        self,
+        llm_client: Agent,
+        pii_redactor: PIIRedactor,
+        html_to_markdown_converter: HTMLToMarkdownConverter,
+    ):
         self.llm_client = llm_client
         self.pii_redactor = pii_redactor
         self.html_to_markdown_converter = html_to_markdown_converter
@@ -38,7 +39,8 @@ class EmailProcessorAgent:
         if email_category == EmailCategory.RECEIPT:
             return EmailCategory.RECEIPT
         else:
-            # TODO: Process the email body content for further categorization if subject is not conclusive
+            # TODO: Process the email body content for further categorization
+            # if subject is not conclusive
             return EmailCategory.OTHER
 
     def process_email_content(self, email: Email) -> Order | None:
@@ -48,9 +50,12 @@ class EmailProcessorAgent:
         category = self._categorize_email_content(email)
 
         if category == EmailCategory.RECEIPT:
-            markdown = self._convert_email_to_markdown(email.body.html or email.body.text or "")
+            markdown = self._convert_email_to_markdown(
+                email.body.html or email.body.text or ""
+            )
             self.llm_client.run_sync(
-                f"""Extract order details from the following receipt email content in markdown format:
+                f"""Extract order details from the following receipt email content in
+                markdown format:
                 {markdown}
                 Respond with a JSON object containing the following fields:
                 - order_id: The unique identifier for the order
@@ -60,7 +65,6 @@ class EmailProcessorAgent:
                 """
             )
         pass
-            
 
     def _categorize_email_content(self, email: Email) -> EmailCategory:
         """Categorize an email based on its body content using LLM analysis.
@@ -120,7 +124,9 @@ class EmailProcessorAgent:
         :param email: The email to convert.
         :return: PII-redacted markdown content.
         """
-        markdown_content = self.html_to_markdown_converter.convert(email.body.html or email.body.text or "")
+        markdown_content = self.html_to_markdown_converter.convert(
+            email.body.html or email.body.text or ""
+        )
         redacted_content = self.pii_redactor.redact_pii(markdown_content)
         return redacted_content
 

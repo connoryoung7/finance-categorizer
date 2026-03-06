@@ -8,14 +8,17 @@ class ConfidenceLevel(IntEnum):
     MediumConfidence = 90
     HighConfidence = 95
 
+
 class CategoryGroup(BaseModel):
     id: str
     name: str
+
 
 class Category(BaseModel):
     id: str
     name: str
     category_group: CategoryGroup
+
 
 class Transaction(BaseModel):
     id: str
@@ -31,9 +34,11 @@ class Transaction(BaseModel):
     account_name: str | None = None
     deleted: bool = False
 
+
 class Payee(BaseModel):
     id: str
     name: str
+
 
 class PayeeCategorization(BaseModel):
     id: str
@@ -41,12 +46,14 @@ class PayeeCategorization(BaseModel):
     payee_id: str
     status: str
 
+
 class TransactionEmail(BaseModel):
     id: str
     transaction_id: str
     email_id: str
     date: datetime
     markdown_body: StrictStr | None
+
 
 class PayeeCategorizationStatus(str, Enum):
     """
@@ -65,6 +72,7 @@ class PayeeCategorizationStatus(str, Enum):
             enough confidence level to suggest it to a human for
             approval.
     """
+
     Approved = "APPROVED"
     Suggested = "SUGGESTED"
     Rejected = "REJECTED"

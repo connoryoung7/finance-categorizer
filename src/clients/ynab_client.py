@@ -6,8 +6,7 @@ from src.models.budget import Category, CategoryGroup, Payee, Transaction
 class YNABClient:
     def __init__(self, access_token: str, budget_id: str) -> None:
         self.configuration = ynab.Configuration(
-            host="https://api.ynab.com/v1",
-            access_token=access_token
+            host="https://api.ynab.com/v1", access_token=access_token
         )
         self.budget_id = budget_id
 
@@ -16,7 +15,7 @@ class YNABClient:
         """Filters out special characters from a string,
         leaving only alphanumeric characters and spaces.
         """
-        return ''.join(char for char in s if char.isalnum() or char == " ")
+        return "".join(char for char in s if char.isalnum() or char == " ")
 
     def get_categories(self) -> list[Category]:
         with ynab.ApiClient(self.configuration) as api_client:
@@ -110,7 +109,7 @@ class YNABClient:
                         id=t.id,
                         payee_id=t.payee_id,
                         payee_name=t.payee_name,
-                        date=t.var_date.strftime("%Y-%m-%d"), # type: ignore
+                        date=t.var_date.strftime("%Y-%m-%d"),  # type: ignore
                         amount=t.amount,
                         memo=t.memo,
                         category_id=t.category_id,
@@ -120,7 +119,6 @@ class YNABClient:
                 )
 
             return transactions
-
 
     def get_payees_by_name(self, name: str):
         with ynab.ApiClient(self.configuration) as api_client:
@@ -162,9 +160,11 @@ class YNABClient:
                 response = api_instance.update_transaction(
                     budget_id=self.budget_id,
                     transaction_id=transaction_id,
-                    data=ynab.PutTransactionWrapper(transaction=ynab.ExistingTransaction(
-                        category_id=transaction.category_id
-                    ))
+                    data=ynab.PutTransactionWrapper(
+                        transaction=ynab.ExistingTransaction(
+                            category_id=transaction.category_id
+                        )
+                    ),
                 )
                 print(response.data)
                 return response.data

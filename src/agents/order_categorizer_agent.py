@@ -1,4 +1,3 @@
-
 from pydantic_ai import Agent
 from toon_format import toon
 
@@ -25,26 +24,28 @@ class OrderCategorizerAgent:
             or None if categorization fails.
         """
         # Placeholder for categorization logic using llm_client
-        response = self.llm_client.chat(messages=[
-            {
-                "role": "system",
-                "content": """You are an expert order categorization agent.
+        response = self.llm_client.chat(
+            messages=[
+                {
+                    "role": "system",
+                    "content": """You are an expert order categorization agent.
                 You will receive order details in Markdown format
                 and must categorize them accurately. You will also be
-                provided with predefined categories in TOON format."""
-            },
-            {
-            "role": "user",
-                "content": f"""
+                provided with predefined categories in TOON format.""",
+                },
+                {
+                    "role": "user",
+                    "content": f"""
                 order content:        
                 {order_content}
 
                 '''toon
                 categories{self._format_categories_to_toon(categories)}
                 '''
-                """
-            }
-        ])
+                """,
+                },
+            ]
+        )
 
         return response
 
@@ -57,10 +58,13 @@ class OrderCategorizerAgent:
         """
         return toon.encode(
             list(
-                map(lambda c: {
-                    "id": c.id,
-                    "name": c.name,
-                    "category_group_name": c.category_group.name
-                }, categories
+                map(
+                    lambda c: {
+                        "id": c.id,
+                        "name": c.name,
+                        "category_group_name": c.category_group.name,
+                    },
+                    categories,
+                )
             )
-        ))
+        )

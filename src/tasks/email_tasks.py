@@ -3,6 +3,7 @@ from src.tasks import app
 
 email_processor = EmailProcessor()
 
+
 @app.task
 def process_email(email_id: str) -> None:
     """

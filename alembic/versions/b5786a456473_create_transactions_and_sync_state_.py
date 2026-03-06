@@ -5,6 +5,7 @@ Revises:
 Create Date: 2026-02-14 21:41:25.099245
 
 """
+
 from collections.abc import Sequence
 
 import sqlalchemy as sa
@@ -12,7 +13,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = 'b5786a456473'
+revision: str = "b5786a456473"
 down_revision: str | Sequence[str] | None = None
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None

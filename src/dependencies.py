@@ -12,8 +12,7 @@ from src.services.transaction_service import TransactionService
 @lru_cache
 def get_ynab_client() -> YNABClient:
     return YNABClient(
-        access_token=settings.ynab_access_key,
-        budget_id=settings.ynab_budget_id
+        access_token=settings.ynab_access_key, budget_id=settings.ynab_budget_id
     )
 
 

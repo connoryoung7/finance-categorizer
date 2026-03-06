@@ -1,4 +1,3 @@
-
 from pydantic import BaseModel, Decimal, Field, PositiveInt
 
 
@@ -7,6 +6,7 @@ class Product(BaseModel):
     name: str
     price: Decimal = Field(..., ge=0.00)
     quantity: PositiveInt
+
 
 class Order(BaseModel):
     id: str

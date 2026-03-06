@@ -7,7 +7,7 @@ class NotificationService:
         self.access_token = access_token
 
     def send_notification(self, topic: str, message: str) -> None:
-        '''
+        """
         Sends a notification to the specified topic with the given
         message in Markdown format.
 
@@ -16,7 +16,7 @@ class NotificationService:
         :type topic: str
         :param message: Description
         :type message: str
-        '''
+        """
         httpx.post(
             url=self.__format_api_url(topic),
             headers={

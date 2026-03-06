@@ -14,7 +14,9 @@ class Settings(BaseSettings):
     nylas_webhook_secret: str
 
     # Database settings
-    database_url: str = "postgresql://postgres:postgres@localhost:5432/finance_categorizer"
+    database_url: str = (
+        "postgresql://postgres:postgres@localhost:5432/finance_categorizer"
+    )
 
     # Celery settings
     celery_broker_url: str = "redis://localhost:6379/0"
