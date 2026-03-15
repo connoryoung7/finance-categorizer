@@ -1,5 +1,29 @@
 {
   "permissionMode": "default",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if echo \"$CLAUDE_TOOL_INPUT\" | python3 -c \"import sys, json; cmd = json.load(sys.stdin).get('command', ''); exit(1 if any(p in cmd.split() for p in ['pip', 'pip3']) else 0)\" 2>/dev/null; then :; else echo 'Use uv instead of pip' >&2; exit 2; fi"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "just fix-lint"
+          }
+        ]
+      }
+    ]
+  },
   "allowedTools": [
     "Bash(git status)",
     "Bash(git log*)",

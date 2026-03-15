@@ -31,6 +31,7 @@ dependencies = [
     "toon-format>=0.1.0",
     "ynab>=1.9.0",
     "flower>=2.0.1",
+    "prometheus-fastapi-instrumentator>=7.0.0",
     "trafilatura>=2.0.0",
 ]
 
