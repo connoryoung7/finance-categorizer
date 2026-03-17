@@ -4,9 +4,9 @@ from typing import final
 from pydantic_ai import Agent
 
 from src.interfaces.html_to_markdown_converter import HTMLToMarkdownConverter
+from src.interfaces.pii_redactor import PIIRedactor
 from src.models.email import Email, EmailCategory
 from src.models.order import Order
-from src.services.pii_redactor import PIIRedactor
 
 
 class EmailProcessorAgent:

@@ -1,8 +1,12 @@
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from pathlib import Path
+import smtplib
 
 from jinja2 import Template
 from mjml import mjml2html
 
+from src.config import settings
 from src.interfaces.email_sender import EmailSender
 from src.logger import logger
 from src.models.budget import Transaction
@@ -56,15 +60,15 @@ class EmailService(EmailSender):
         )
 
     def _send_email(self, to_email: str, subject: str, html_content: str) -> None:
-        """Send an email. Currently prints to console as placeholder."""
-        # TODO: Implement actual email sending with chosen provider
-        logger.info(f"Email would be sent to: {to_email}")
-        logger.info(f"Subject: {subject}")
-        logger.info(f"HTML content length: {len(html_content)} characters")
-        print(f"\n{'=' * 50}")
-        print("EMAIL WOULD BE SENT")
-        print(f"{'=' * 50}")
-        print(f"To: {to_email}")
-        print(f"Subject: {subject}")
-        print(f"HTML Content Length: {len(html_content)} characters")
-        print(f"{'=' * 50}\n")
+        """Send an email via SMTP."""
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = subject
+        msg["From"] = settings.email_from_address
+        msg["To"] = to_email
+        msg.attach(MIMEText(html_content, "html"))
+
+        with smtplib.SMTP(settings.smtp_host, settings.smtp_port) as server:
+            server.starttls()
+            server.login(settings.smtp_username, settings.smtp_password)
+            server.sendmail(settings.email_from_address, to_email, msg.as_string())
+            logger.info(f"Email sent to {to_email} with subject: {subject}")

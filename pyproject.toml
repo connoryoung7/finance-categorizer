@@ -55,6 +55,7 @@ select = [
     "SLF001", # private-member-access
     "W292",   # no newline at end of file
 ]
+unfixable = ["F401"]  # unused imports must be removed manually, not auto-fixed
 
 [tool.ruff.lint.isort]
 # Section order: standard library, third-party, first-party (local)

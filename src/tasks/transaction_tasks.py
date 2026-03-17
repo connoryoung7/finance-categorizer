@@ -4,7 +4,7 @@ from src.dependencies import get_sync_service
 from src.tasks import app
 
 
-@app.task
+@app.task(rate_limit="10/m")
 def categorize_transaction(transaction_id: str) -> None:
     """Categorize a single transaction by ID."""
     # TODO: Inject dependencies and delegate to TransactionService

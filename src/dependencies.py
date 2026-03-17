@@ -2,9 +2,11 @@ from functools import lru_cache
 
 from sqlalchemy import Engine, create_engine
 
+from src.adapters.presidio_pii_redactor import PresidioPIIRedactor
 from src.clients.ynab_client import YNABClient
 from src.config import settings
 from src.repos.transaction_postgres_repo import TransactionPostgresRepo
+from src.services.email_service import EmailService
 from src.services.sync_service import SyncService
 from src.services.transaction_service import TransactionService
 
@@ -31,6 +33,16 @@ def get_db_engine() -> Engine:
 def get_transaction_repo() -> TransactionPostgresRepo:
     engine = get_db_engine()
     return TransactionPostgresRepo(db=engine)
+
+
+@lru_cache
+def get_pii_redactor() -> PresidioPIIRedactor:
+    return PresidioPIIRedactor()
+
+
+@lru_cache
+def get_email_service() -> EmailService:
+    return EmailService()
 
 
 @lru_cache
