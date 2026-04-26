@@ -37,3 +37,8 @@ flowchart TB
     Worker <-->|API Calls| LLM
     Worker <-->|API Calls| YNAB
 ```
+
+## Docker images
+
+- `docker build .` builds the production image, which now uses the distroless `prod` stage by default.
+- `docker build --target dev .` builds the development image used by `docker-compose.dev.yml`.

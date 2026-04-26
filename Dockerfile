@@ -12,8 +12,8 @@ COPY pyproject.toml uv.lock ./
 
 ENV PATH="/app/.venv/bin:$PATH"
 
-# --- prod ---
-FROM base AS prod
+# --- builder ---
+FROM base AS builder
 RUN uv sync --frozen --no-dev --no-install-project
 COPY src/ src/
 
@@ -33,4 +33,3 @@ COPY --from=builder /app /app
 
 ENV PATH="/app/.venv/bin:$PATH" \
   PYTHONPATH="/app"
-

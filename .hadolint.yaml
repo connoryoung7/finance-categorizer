@@ -1,0 +1,6 @@
+ignore:
+  - DL3007  # Intentionally use latest for uv — pinned at Docker build time
+
+trustedRegistries:
+  - ghcr.io
+  - docker.io

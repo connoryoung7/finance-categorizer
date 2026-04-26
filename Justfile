@@ -10,6 +10,18 @@ lint:
 fix-lint:
     uv run ruff check --fix .
 
+# Lint the Dockerfile with pinned hadolint and the repo config
+lint-dockerfile:
+    docker run --rm \
+        -v "$PWD/Dockerfile:/workspace/Dockerfile:ro" \
+        -v "$PWD/.hadolint.yaml:/.config/hadolint.yaml:ro" \
+        ghcr.io/hadolint/hadolint:v2.14.0 /workspace/Dockerfile
+
+# Run all linters (Python + Dockerfile)
+lint-all:
+    just lint
+    just lint-dockerfile
+
 # Run pytest tests
 test:
     uv run pytest tests/
@@ -48,7 +60,7 @@ docker-down:
 
 # Perform a security scan on the Docker image using Trivy
 security-scan:
-    docker build -t finance-categorizer .
+    docker build --target prod -t finance-categorizer .
     docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
     -v trivy-cache:/root/.cache/ \
     -v "$PWD":/report \

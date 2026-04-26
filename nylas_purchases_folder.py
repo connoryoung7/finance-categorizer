@@ -2,13 +2,17 @@ import os
 
 from dotenv import load_dotenv
 from nylas import Client
+import tiktoken
 
+from src.adapters.html_to_markdown_client import HTMLToMarkdownClient
 from src.config import settings
 
 load_dotenv()
 
 nylas_client = Client(settings.nylas_api_key, settings.nylas_api_uri)
 grant_id = settings.nylas_grant_id
+converter = HTMLToMarkdownClient()
+encoding = tiktoken.get_encoding("o200k_base")
 
 messages = nylas_client.messages.list(
     identifier=grant_id,
@@ -30,14 +34,11 @@ for message in messages.data[0:25]:
 
     os.makedirs(f"parsed_messages/{from_email}", exist_ok=True)
 
-    print("\nConverted Content:\n")
+    markdown = converter.convert(message.body)
+    num_tokens = len(encoding.encode(markdown))
+    print(f"Tokens: {num_tokens}\n")
+
     with open(
-        f"parsed_messages/{from_email}/{message.id}.html", "w", encoding="utf-8"
+        f"parsed_messages/{from_email}/{message.id}.md", "w", encoding="utf-8"
     ) as f:
-        # converted = convert_with_metadata(
-        #     message.body,
-        #     metadata_config=MetadataConfig(extract_links=False, extract_images=False)
-        #     )
-        # f.write(converted[0])
-        # print(converted[1])
-        f.write(message.body)
+        f.write(markdown)
