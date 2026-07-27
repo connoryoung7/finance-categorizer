@@ -1,18 +1,23 @@
-from typing import Optional
+from decimal import Decimal
+from uuid import UUID
 
-from pydantic import BaseModel, Decimal, Field, PositiveInt
+from pydantic import BaseModel, Field, PositiveInt
 
 
 class Product(BaseModel):
-    id: str
+    id: int
     name: str
-    price: Decimal = Field(..., ge=0.00)
+    price: Decimal = Field(..., ge=0)
     quantity: PositiveInt
 
 
 class Order(BaseModel):
-    id: str
-    total_amount: Decimal = Field(..., ge=0.00)
-    total_tax: Decimal | None = Field(..., ge=0.00)
-    products: list[Product]
+    id: UUID | None = None
+    transaction_id: str
+    order_number: str
+    overall_cost: Decimal = Field(..., ge=0)
+    total_tax: Decimal = Field(..., ge=0)
+    tip: Decimal | None = Field(default=None, ge=0)
+    total_amount: Decimal = Field(..., ge=0)
     status: str
+    products: list[Product]
