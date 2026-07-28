@@ -80,16 +80,23 @@ class OrderRecord(Base):
 
 class OrderItemRecord(Base):
     __tablename__ = "order_items"
+    __table_args__ = (
+        UniqueConstraint(
+            "order_id",
+            "line_number",
+            name="uq_order_items_order_line_number",
+        ),
+    )
 
-    # Application-provided identifier (not autoincremented). Line-item ids repeat
-    # across orders, so the key is scoped to the owning order.
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=False)
+    id: Mapped[uuid.UUID] = mapped_column(
+        Uuid, primary_key=True, default=uuid.uuid4
+    )
     order_id: Mapped[uuid.UUID] = mapped_column(
         Uuid,
         ForeignKey("orders.id", ondelete="CASCADE"),
-        primary_key=True,
         nullable=False,
     )
+    line_number: Mapped[int] = mapped_column(Integer, nullable=False)
     name: Mapped[str] = mapped_column(String, nullable=False)
     price: Mapped[int] = mapped_column(BigInteger, nullable=False)
     quantity: Mapped[int] = mapped_column(Integer, nullable=False)
@@ -97,7 +104,7 @@ class OrderItemRecord(Base):
     # to decide whether a transaction should be split across categories.
     # NOTE: line items are delete-and-replace on re-ingest, so once a categorizer
     # populates this, re-ingesting an order will wipe it. Preservation is deferred
-    # until that categorizer is built (needs a stable line-item key we don't have).
+    # until that categorizer is built.
     category_id: Mapped[str | None] = mapped_column(String, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, server_default=func.now()

@@ -58,14 +58,14 @@ def upgrade() -> None:
 
     op.create_table(
         "order_items",
-        sa.Column("id", sa.Integer(), primary_key=True, autoincrement=False),
+        sa.Column("id", postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column(
             "order_id",
             postgresql.UUID(as_uuid=True),
             sa.ForeignKey("orders.id", ondelete="CASCADE"),
-            primary_key=True,
             nullable=False,
         ),
+        sa.Column("line_number", sa.Integer(), nullable=False),
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("price", sa.BigInteger(), nullable=False),
         sa.Column("quantity", sa.Integer(), nullable=False),
@@ -81,6 +81,11 @@ def upgrade() -> None:
             sa.DateTime(),
             nullable=False,
             server_default=sa.func.now(),
+        ),
+        sa.UniqueConstraint(
+            "order_id",
+            "line_number",
+            name="uq_order_items_order_line_number",
         ),
     )
 

@@ -59,14 +59,14 @@ class OrderPostgresRepo(OrderRepoInterface):
                     insert(OrderItemRecord),
                     [
                         {
-                            "id": product.id,
                             "order_id": order_id,
+                            "line_number": line_number,
                             "name": product.name,
                             "price": _to_milliunits(product.price),
                             "quantity": product.quantity,
                             "category_id": product.category_id,
                         }
-                        for product in order.products
+                        for line_number, product in enumerate(order.products, start=1)
                     ],
                 )
 

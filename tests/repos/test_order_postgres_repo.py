@@ -1,4 +1,5 @@
 from decimal import Decimal
+from uuid import UUID
 
 import pytest
 from sqlalchemy import create_engine, select, text
@@ -82,6 +83,8 @@ def test_insert_creates_order_and_items(db):
             .all()
         )
         assert len(items) == 1
+        assert isinstance(items[0].id, UUID)
+        assert items[0].line_number == 1
         assert items[0].price == 10000
         assert items[0].quantity == 2
         assert items[0].category_id is None
@@ -112,7 +115,8 @@ def test_reingest_updates_in_place_and_replaces_items(db):
             .all()
         )
         assert len(items) == 1
-        assert items[0].id == 2
+        assert isinstance(items[0].id, UUID)
+        assert items[0].line_number == 1
         assert items[0].name == "Tea"
 
 
@@ -135,9 +139,12 @@ def test_delete_order_cascades_items(db):
         assert items == []
 
 
-def test_same_product_id_across_orders(db):
+def test_line_number_is_unique_per_order(db):
     repo = OrderPostgresRepo(db)
-    shared = [Product(id=1, name="Coffee", price=Decimal("10.00"), quantity=2)]
+    shared = [
+        Product(id=999, name="Coffee", price=Decimal("10.00"), quantity=2),
+        Product(id=999, name="Tea", price=Decimal("5.00"), quantity=1),
+    ]
 
     first_id = repo.upsert_order(_order(order_number="112-ABC", products=shared))
     second_id = repo.upsert_order(_order(order_number="113-XYZ", products=shared))
@@ -154,9 +161,17 @@ def test_same_product_id_across_orders(db):
             .scalars()
             .all()
         )
-        assert len(items) == 2
+        assert len(items) == 4
         assert {item.order_id for item in items} == {first_id, second_id}
-        assert {item.id for item in items} == {1}
+        assert len({item.id for item in items}) == 4
+        assert {
+            (item.order_id, item.line_number) for item in items
+        } == {
+            (first_id, 1),
+            (first_id, 2),
+            (second_id, 1),
+            (second_id, 2),
+        }
 
 
 def test_category_id_round_trips_when_set(db):
