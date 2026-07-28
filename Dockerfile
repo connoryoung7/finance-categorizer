@@ -21,7 +21,6 @@ COPY src/ src/
 FROM base AS dev
 RUN uv sync --frozen --no-install-project
 # Source code is volume-mounted at runtime, not copied
-||||||| Stash base
 
 # --- prod ---
 FROM gcr.io/distroless/python3-debian12:nonroot AS prod
