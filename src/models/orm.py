@@ -99,6 +99,12 @@ class OrderItemRecord(Base):
     # populates this, re-ingesting an order will wipe it. Preservation is deferred
     # until that categorizer is built (needs a stable line-item key we don't have).
     category_id: Mapped[str | None] = mapped_column(String, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, server_default=func.now(), onupdate=func.now()
+    )
 
     order: Mapped["OrderRecord"] = relationship(back_populates="items")
 

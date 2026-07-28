@@ -33,3 +33,11 @@ There is also a `tests` folder in the root directory of the project. The tests f
 All application Python code lives under `src/`. The project root contains only infrastructure files (`pyproject.toml`, `Justfile`, `.env`, etc.).
 
 Testing should be done using the `pytest` framework.
+
+## Database
+Every database table must include `created_at` and `updated_at` audit timestamp columns:
+
+- `created_at`: `DateTime`, `nullable=False`, `server_default=func.now()`.
+- `updated_at`: `DateTime`, `nullable=False`, `server_default=func.now()`, `onupdate=func.now()`.
+
+Follow the existing pattern in `TransactionRecord` / `OrderRecord` (`src/models/orm.py`), and mirror the columns in the corresponding Alembic migration.

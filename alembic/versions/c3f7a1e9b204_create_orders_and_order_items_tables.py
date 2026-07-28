@@ -70,6 +70,18 @@ def upgrade() -> None:
         sa.Column("price", sa.BigInteger(), nullable=False),
         sa.Column("quantity", sa.Integer(), nullable=False),
         sa.Column("category_id", sa.String(), nullable=True),
+        sa.Column(
+            "created_at",
+            sa.DateTime(),
+            nullable=False,
+            server_default=sa.func.now(),
+        ),
+        sa.Column(
+            "updated_at",
+            sa.DateTime(),
+            nullable=False,
+            server_default=sa.func.now(),
+        ),
     )
 
 
