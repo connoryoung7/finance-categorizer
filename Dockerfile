@@ -21,3 +21,35 @@ COPY src/ src/
 FROM base AS dev
 RUN uv sync --frozen --no-install-project
 # Source code is volume-mounted at runtime, not copied
+<<<<<<< Updated upstream
+||||||| Stash base
+
+# --- prod ---
+FROM gcr.io/distroless/python3-debian12:nonroot AS prod
+
+WORKDIR /app
+
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY --from=builder /usr/local /usr/local
+COPY --from=builder /app /app
+
+ENV PATH="/app/.venv/bin:$PATH" \
+    PYTHONPATH="/app"
+=======
+
+# --- prod ---
+FROM gcr.io/distroless/python3-debian12:nonroot AS prod
+
+WORKDIR /app
+
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY --from=builder /usr/local /usr/local
+COPY --from=builder /app /app
+
+ENV PATH="/app/.venv/bin:$PATH" \
+    PYTHONPATH="/app"
+
+# The distroless base sets a Python interpreter as ENTRYPOINT; clear it so the
+# compose `command:` overrides run the console scripts from /app/.venv/bin.
+ENTRYPOINT []
+>>>>>>> Stashed changes

@@ -63,6 +63,7 @@ def upgrade() -> None:
             "order_id",
             postgresql.UUID(as_uuid=True),
             sa.ForeignKey("orders.id", ondelete="CASCADE"),
+            primary_key=True,
             nullable=False,
         ),
         sa.Column("name", sa.String(), nullable=False),

@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 import pytest
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine, select, text
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 
@@ -15,33 +15,43 @@ TRANSACTION_ID = "txn-test-1"
 
 @pytest.fixture(scope="module")
 def engine():
-    eng = create_engine(settings.database_url)
+    # Always the dedicated test database -- these tests truncate what they find.
+    eng = create_engine(settings.test_database_url)
     try:
         with eng.connect():
             pass
     except OperationalError:
-        pytest.skip("PostgreSQL is not reachable")
+        pytest.skip("Test PostgreSQL database is not reachable")
+    Base.metadata.create_all(eng)
     return eng
 
 
 @pytest.fixture
 def db(engine):
-    Base.metadata.create_all(engine)
     with Session(engine) as session:
+        session.execute(
+            text(
+                "TRUNCATE order_items, orders, transactions "
+                "RESTART IDENTITY CASCADE"
+            )
+        )
         session.add(
             TransactionRecord(
                 id=TRANSACTION_ID, amount=0, approved=False, deleted=False
             )
         )
         session.commit()
-    yield engine
-    Base.metadata.drop_all(engine)
+    return engine
 
 
-def _order(status: str = "pending", products: list[Product] | None = None) -> Order:
+def _order(
+    status: str = "pending",
+    products: list[Product] | None = None,
+    order_number: str = "112-ABC",
+) -> Order:
     return Order(
         transaction_id=TRANSACTION_ID,
-        order_number="112-ABC",
+        order_number=order_number,
         overall_cost=Decimal("20.00"),
         total_tax=Decimal("1.50"),
         tip=None,
@@ -74,6 +84,7 @@ def test_insert_creates_order_and_items(db):
         assert len(items) == 1
         assert items[0].price == 10000
         assert items[0].quantity == 2
+        assert items[0].category_id is None
 
 
 def test_reingest_updates_in_place_and_replaces_items(db):
@@ -122,6 +133,56 @@ def test_delete_order_cascades_items(db):
             .all()
         )
         assert items == []
+
+
+def test_same_product_id_across_orders(db):
+    repo = OrderPostgresRepo(db)
+    shared = [Product(id=1, name="Coffee", price=Decimal("10.00"), quantity=2)]
+
+    first_id = repo.upsert_order(_order(order_number="112-ABC", products=shared))
+    second_id = repo.upsert_order(_order(order_number="113-XYZ", products=shared))
+
+    assert first_id != second_id
+
+    with Session(db) as session:
+        items = (
+            session.execute(
+                select(OrderItemRecord).where(
+                    OrderItemRecord.order_id.in_([first_id, second_id])
+                )
+            )
+            .scalars()
+            .all()
+        )
+        assert len(items) == 2
+        assert {item.order_id for item in items} == {first_id, second_id}
+        assert {item.id for item in items} == {1}
+
+
+def test_category_id_round_trips_when_set(db):
+    repo = OrderPostgresRepo(db)
+    order = _order(
+        products=[
+            Product(
+                id=1,
+                name="Coffee",
+                price=Decimal("10.00"),
+                quantity=2,
+                category_id="cat-abc",
+            )
+        ]
+    )
+    order_id = repo.upsert_order(order)
+
+    with Session(db) as session:
+        item = (
+            session.execute(
+                select(OrderItemRecord).where(OrderItemRecord.order_id == order_id)
+            )
+            .scalars()
+            .one()
+        )
+        assert item.category_id == "cat-abc"
 
 
 def test_tip_persisted_when_present(db):

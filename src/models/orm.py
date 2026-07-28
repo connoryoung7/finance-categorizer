@@ -81,10 +81,14 @@ class OrderRecord(Base):
 class OrderItemRecord(Base):
     __tablename__ = "order_items"
 
-    # Application-provided identifier (not autoincremented).
+    # Application-provided identifier (not autoincremented). Line-item ids repeat
+    # across orders, so the key is scoped to the owning order.
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=False)
     order_id: Mapped[uuid.UUID] = mapped_column(
-        Uuid, ForeignKey("orders.id", ondelete="CASCADE"), nullable=False
+        Uuid,
+        ForeignKey("orders.id", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
     )
     name: Mapped[str] = mapped_column(String, nullable=False)
     price: Mapped[int] = mapped_column(BigInteger, nullable=False)
