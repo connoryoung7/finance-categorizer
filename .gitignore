@@ -211,3 +211,6 @@ email_logs/
 
 # Static analysis tool outputs
 *.sarif
+
+worktrees/
+.worktrees
