@@ -10,12 +10,18 @@ lint:
 fix-lint:
     uv run ruff check --fix .
 
-# Lint the Dockerfile with pinned hadolint and the repo config
+# Lint every Dockerfile in the project with pinned hadolint and the repo config
 lint-dockerfile:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    files=$(git ls-files '*Dockerfile' '*Dockerfile.*' '*.dockerfile')
+    if [ -z "$files" ]; then echo "No Dockerfiles found"; exit 0; fi
+    echo "Linting:" $files
     docker run --rm \
-        -v "$PWD/Dockerfile:/workspace/Dockerfile:ro" \
-        -v "$PWD/.hadolint.yaml:/.config/hadolint.yaml:ro" \
-        ghcr.io/hadolint/hadolint:v2.14.0 /workspace/Dockerfile
+        -v "$PWD:/workspace:ro" \
+        -w /workspace \
+        ghcr.io/hadolint/hadolint:v2.14.0 \
+        --config /workspace/.hadolint.yaml $files
 
 # Run all linters (Python + Dockerfile)
 lint-all:

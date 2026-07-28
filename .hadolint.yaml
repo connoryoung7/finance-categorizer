@@ -4,3 +4,4 @@ ignore:
 trustedRegistries:
   - ghcr.io
   - docker.io
+  - gcr.io  # distroless base images for the prod stage

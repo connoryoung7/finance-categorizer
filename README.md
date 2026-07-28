@@ -38,6 +38,14 @@ flowchart TB
     Worker <-->|API Calls| YNAB
 ```
 
+## Linting
+
+- `just lint` runs `ruff` over the Python code.
+- `just fix-lint` runs `ruff` with auto-fix.
+- `just lint-dockerfile` runs a pinned `hadolint` over every Dockerfile tracked by git, using
+  the shared `.hadolint.yaml` config. Requires a running Docker daemon.
+- `just lint-all` runs both of the above; this is what CI runs on every push and pull request.
+
 ## Docker images
 
 - `docker build .` builds the production image, which now uses the distroless `prod` stage by default.
