@@ -17,6 +17,11 @@ class Settings(BaseSettings):
     database_url: str = (
         "postgresql://postgres:postgres@localhost:5432/finance_categorizer"
     )
+    # Dedicated database for tests. Never point this at the application database:
+    # the test suite creates and truncates tables in it.
+    test_database_url: str = (
+        "postgresql://postgres:postgres@localhost:5432/finance_categorizer_test"
+    )
 
     # Celery settings
     celery_broker_url: str = "redis://localhost:6379/0"
