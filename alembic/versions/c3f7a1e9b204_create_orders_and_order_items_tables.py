@@ -68,6 +68,7 @@ def upgrade() -> None:
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("price", sa.BigInteger(), nullable=False),
         sa.Column("quantity", sa.Integer(), nullable=False),
+        sa.Column("category_id", sa.String(), nullable=True),
     )
 
 

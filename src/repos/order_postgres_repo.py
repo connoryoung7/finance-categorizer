@@ -64,6 +64,7 @@ class OrderPostgresRepo(OrderRepoInterface):
                             "name": product.name,
                             "price": _to_milliunits(product.price),
                             "quantity": product.quantity,
+                            "category_id": product.category_id,
                         }
                         for product in order.products
                     ],

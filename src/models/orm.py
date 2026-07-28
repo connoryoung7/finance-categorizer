@@ -89,6 +89,12 @@ class OrderItemRecord(Base):
     name: Mapped[str] = mapped_column(String, nullable=False)
     price: Mapped[int] = mapped_column(BigInteger, nullable=False)
     quantity: Mapped[int] = mapped_column(Integer, nullable=False)
+    # YNAB category id, assigned later by a categorization step; used downstream
+    # to decide whether a transaction should be split across categories.
+    # NOTE: line items are delete-and-replace on re-ingest, so once a categorizer
+    # populates this, re-ingesting an order will wipe it. Preservation is deferred
+    # until that categorizer is built (needs a stable line-item key we don't have).
+    category_id: Mapped[str | None] = mapped_column(String, nullable=True)
 
     order: Mapped["OrderRecord"] = relationship(back_populates="items")
 

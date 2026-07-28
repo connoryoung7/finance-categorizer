@@ -9,6 +9,8 @@ class Product(BaseModel):
     name: str
     price: Decimal = Field(..., ge=0)
     quantity: PositiveInt
+    # YNAB category id, assigned later by a categorization step (NULL at ingest).
+    category_id: str | None = None
 
 
 class Order(BaseModel):
