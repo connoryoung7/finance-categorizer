@@ -11,9 +11,11 @@ class OrderRepoInterface(ABC):
     def upsert_order(self, order: Order) -> uuid.UUID:
         """Upsert an order and replace its line items.
 
-        The order is upserted in place on its ``(transaction_id, order_number)``
-        idempotency key, and its line items are deleted and re-inserted every
-        call. Both happen inside a single transaction.
+        The order is upserted in place on ``transaction_id`` -- one posted card
+        charge is one order -- and its line items are deleted and re-inserted
+        every call. Categories already assigned to line items are carried
+        across, matched on ``external_id`` then ``name``. All of it happens
+        inside a single transaction.
 
         Args:
             order: The Order domain model to persist.

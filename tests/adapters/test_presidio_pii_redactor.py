@@ -46,17 +46,53 @@ class TestPresidioPIIRedactor:
         assert "<REDACTED_IBAN_CODE>" in result
         assert "DE89370400440532013000" not in result
 
-    def test_redact_url(self, redactor):
-        text = "Visit https://www.example.com/secret for details."
+    def test_urls_are_preserved(self, redactor):
+        # URLs carry vendor item identifiers (e.g. an Amazon ASIN), which are
+        # sometimes the only remaining trace of what was purchased.
+        text = "Visit https://www.amazon.com/dp/B08QPTNTQ5 for details."
         result = redactor.redact_pii(text)
-        assert "<REDACTED_URL>" in result
-        assert "https://www.example.com/secret" not in result
+        assert "https://www.amazon.com/dp/B08QPTNTQ5" in result
 
-    def test_redact_person_name(self, redactor):
+    def test_person_names_are_preserved(self, redactor):
+        # PERSON is off because Presidio's NER cannot tell a customer name from
+        # a product name, and losing product names defeats the pipeline.
         text = "The package was sent to John Smith at the address."
         result = redactor.redact_pii(text)
-        assert "<REDACTED_PERSON>" in result
-        assert "John Smith" not in result
+        assert "John Smith" in result
+
+    def test_product_names_survive_redaction(self, redactor):
+        # Real line items from parsed_messages/no-reply@toasttab.com -- these
+        # are exactly the strings a PERSON/LOCATION/NRP recognizer would eat.
+        text = (
+            "Classic Four Pack $10.00\n"
+            "French Toast Four Pack $10.00\n"
+            "Anadama Four Pack $10.00\n"
+            "Ham Jamboree $11.00\n"
+            "American Classic $7.00\n"
+            "Lg (24 oz) Matcha Lemonade $5.50\n"
+        )
+        result = redactor.redact_pii(text)
+        for item in [
+            "Classic Four Pack",
+            "French Toast Four Pack",
+            "Anadama Four Pack",
+            "Ham Jamboree",
+            "American Classic",
+            "Matcha Lemonade",
+        ]:
+            assert item in result
+        assert "<REDACTED_" not in result
+
+    def test_hard_identifiers_still_redacted_alongside_product_names(self, redactor):
+        text = (
+            "Ham Jamboree $11.00\n"
+            "Paid with card 4532015112830366\n"
+            "SSN 078-05-1120\n"
+        )
+        result = redactor.redact_pii(text)
+        assert "Ham Jamboree" in result
+        assert "4532015112830366" not in result
+        assert "078-05-1120" not in result
 
     def test_redact_multiple_pii(self, redactor):
         text = "John Doe (john.doe@example.com) called from 555-123-4567."

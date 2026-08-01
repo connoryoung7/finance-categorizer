@@ -23,6 +23,11 @@ class Settings(BaseSettings):
         "postgresql://postgres:postgres@localhost:5432/finance_categorizer_test"
     )
 
+    # Invoice ingestion settings
+    invoice_extraction_model: str = "mistral-large-latest"
+    # Rejected above this size, before anything is read into memory.
+    invoice_max_upload_bytes: int = 10 * 1024 * 1024
+
     # Celery settings
     celery_broker_url: str = "redis://localhost:6379/0"
     celery_result_backend: str = "redis://localhost:6379/0"

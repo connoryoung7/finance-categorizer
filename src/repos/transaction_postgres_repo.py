@@ -1,12 +1,40 @@
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
+from datetime import date as date_type
 
-from sqlalchemy import Engine, select
+from sqlalchemy import Engine, func, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
 from src.interfaces.transaction_repo import TransactionRepoInterface
 from src.models.budget import Transaction
 from src.models.orm import SyncState, TransactionRecord
+
+
+def _to_domain(record: TransactionRecord) -> Transaction:
+    return Transaction(
+        id=record.id,
+        payee_id=record.payee_id,
+        payee_name=record.payee_name,
+        date=record.date,
+        amount=record.amount,
+        memo=record.memo,
+        category_id=record.category_id,
+        category_name=record.category_name,
+        approved=record.approved,
+        account_id=record.account_id,
+        account_name=record.account_name,
+        deleted=record.deleted,
+    )
+
+
+def _date_window(date: str, window_days: int) -> tuple[str, str] | None:
+    """ISO bounds either side of ``date``, or None if it isn't a valid date."""
+    try:
+        centre = date_type.fromisoformat(date)
+    except ValueError:
+        return None
+    delta = timedelta(days=window_days)
+    return (centre - delta).isoformat(), (centre + delta).isoformat()
 
 
 class TransactionPostgresRepo(TransactionRepoInterface):
@@ -58,6 +86,38 @@ class TransactionPostgresRepo(TransactionRepoInterface):
             result = session.execute(stmt)
             session.commit()
             return result.rowcount
+
+    def find_candidate_transactions(
+        self,
+        amount_milliunits: int,
+        date: str | None = None,
+        window_days: int = 7,
+        payee_hint: str | None = None,
+    ) -> list[Transaction]:
+        with Session(self.db) as session:
+            stmt = select(TransactionRecord).where(
+                func.abs(TransactionRecord.amount) == abs(amount_milliunits),
+                TransactionRecord.deleted.is_(False),
+            )
+
+            if date:
+                window = _date_window(date, window_days)
+                if window:
+                    start, end = window
+                    stmt = stmt.where(TransactionRecord.date.between(start, end))
+
+            if payee_hint:
+                stmt = stmt.where(
+                    TransactionRecord.payee_name.ilike(f"%{payee_hint}%")
+                )
+
+            records = session.execute(stmt).scalars().all()
+            return [_to_domain(record) for record in records]
+
+    def get_transaction(self, transaction_id: str) -> Transaction | None:
+        with Session(self.db) as session:
+            record = session.get(TransactionRecord, transaction_id)
+            return _to_domain(record) if record else None
 
     def get_last_knowledge_of_server(self, budget_id: str) -> int | None:
         with Session(self.db) as session:
