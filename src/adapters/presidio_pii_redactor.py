@@ -4,6 +4,13 @@ from presidio_anonymizer.entities import OperatorConfig
 
 from src.interfaces.pii_redactor import PIIRedactor
 
+# Only unambiguous identifiers are redacted.
+#
+# PERSON, LOCATION, NRP and URL are deliberately absent. Receipts are mostly
+# product names, and Presidio's NER reads many of them as people or places --
+# "Ham Jamboree", "American Classic", "French Toast Four Pack". Redacting those
+# destroys the line items this pipeline exists to extract, and URL redaction
+# strips vendor item identifiers (e.g. an Amazon ASIN) along with them.
 operators = {
     "CREDIT_CARD": OperatorConfig(
         operator_name="replace",
@@ -25,29 +32,9 @@ operators = {
         operator_name="replace",
         params={"new_value": "<REDACTED_IP_ADDRESS>"},
     ),
-    "NRP": OperatorConfig(
-        operator_name="replace",
-        params={"new_value": "<REDACTED_NRP>"},
-    ),
-    "LOCATION": OperatorConfig(
-        operator_name="replace",
-        params={"new_value": "<REDACTED_LOCATION>"},
-    ),
-    "PERSON": OperatorConfig(
-        operator_name="replace",
-        params={"new_value": "<REDACTED_PERSON>"},
-    ),
     "PHONE_NUMBER": OperatorConfig(
         operator_name="replace",
         params={"new_value": "<REDACTED_PHONE_NUMBER>"},
-    ),
-    "MEDICAL_LICENSE": OperatorConfig(
-        operator_name="replace",
-        params={"new_value": "<REDACTED_MEDICAL_LICENSE>"},
-    ),
-    "URL": OperatorConfig(
-        operator_name="replace",
-        params={"new_value": "<REDACTED_URL>"},
     ),
     "US_BANK_NUMBER": OperatorConfig(
         operator_name="replace",
@@ -71,6 +58,8 @@ operators = {
     ),
 }
 
+REDACTED_ENTITIES = list(operators)
+
 
 class PresidioPIIRedactor(PIIRedactor):
     def __init__(self):
@@ -78,7 +67,9 @@ class PresidioPIIRedactor(PIIRedactor):
         self.anonymizer = AnonymizerEngine()
 
     def redact_pii(self, text: str) -> str:
-        analysis_results = self.analyzer.analyze(text=text, language="en")
+        analysis_results = self.analyzer.analyze(
+            text=text, language="en", entities=REDACTED_ENTITIES
+        )
         return self.anonymizer.anonymize(
             text=text, analyzer_results=analysis_results, operators=operators
         ).text

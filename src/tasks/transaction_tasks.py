@@ -2,6 +2,7 @@ from loguru import logger
 
 from src.dependencies import get_sync_service
 from src.tasks import app
+from src.tasks.invoice_tasks import retry_unmatched_invoices
 
 
 @app.task(rate_limit="10/m")
@@ -24,6 +25,9 @@ def sync_ynab_transactions(self) -> dict:
     try:
         sync_service = get_sync_service()
         count = sync_service.sync_transactions()
+        # Newly posted charges may be what an already-uploaded invoice was
+        # waiting for, so give the unmatched ones another look.
+        retry_unmatched_invoices.delay()
         return {"status": "success", "transactions_synced": count}
     except Exception as exc:
         logger.error(f"YNAB sync failed: {exc}")
