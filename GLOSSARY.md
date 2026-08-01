@@ -8,7 +8,9 @@ A charge to an account of some kind. For example, it could be a credit card tran
 
 # Line item
 
-A part of an order. This could include one or more items of the same product. For example, if a user orders three notebooks all of the same kind then that would be one line item. The price of that line item would be the total cost of all the notebooks.
+A part of an order. This could include one or more items of the same product. For example, if a user orders three notebooks all of the same kind then that would be one line item, with a quantity of three.
+
+The price recorded on a line item is the price of a **single unit**, not the total. The cost of the whole line is `price * quantity` — three notebooks at $4.00 each is a line item with `price = 4.00` and `quantity = 3`, totalling $12.00. This matches how vendors present receipts, and it is what the reconciliation check in `OrderIngestionService` assumes.
 
 # Invoice
 
